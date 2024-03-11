@@ -29,7 +29,7 @@ class PluginGetKafkaTopicOffset(PluginBase):
         if st.button("查询各分区偏移量"):
             self.check_is_not_none(kafka_topic, "未输入完整的 Kafka 集群、TOPIC 和消费者组信息")
 
-            consumer = KafkaConsumer(group_id=kafka_topic.group_id,
+            consumer = KafkaConsumer(group_id=kafka_topic.group,
                                      bootstrap_servers=kafka_topic.bootstrap_servers,
                                      api_version=(0, 11))
 

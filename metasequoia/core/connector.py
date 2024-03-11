@@ -7,8 +7,9 @@ from typing import Optional
 import pymysql
 import sshtunnel
 
+from metasequoia.connector.ssh_tunnel import SshTunnel
 from metasequoia.core.config import Configuration
-from metasequoia.core.objects import SshTunnel, RdsInstance
+from metasequoia.core.objects import RdsInstance
 
 
 class MysqlConn:
@@ -60,8 +61,6 @@ class MysqlConn:
                                         pkey=ssh_tunnel_info_conf["pkey"])
         else:
             ssh_tunnel_info = None
-
-        schema = schema
 
         return MysqlConn(rds_instance=rds_info, ssh_tunnel_info=ssh_tunnel_info, schema=schema)
 

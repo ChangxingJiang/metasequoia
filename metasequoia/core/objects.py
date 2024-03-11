@@ -1,31 +1,18 @@
-from typing import List, Optional
+from typing import Optional
 
-__all__ = ["KafkaTopic", "RdsInstance", "RdsTable", "SshTunnel", "RdsTableWithMonitorKafkaTopic"]
+from metasequoia.connector.kafka import KafkaTopic
+from metasequoia.connector.ssh_tunnel import SshTunnel
+
+__all__ = ["RdsInstance", "RdsTable", "RdsTableWithMonitorKafkaTopic"]
 
 
 # TODO 将各个属性修改为不可直接修改
 
 
-class KafkaServer:
-    def __init__(self, bootstrap_server: List[str]):
-        self.bootstrap_server = bootstrap_server
-
-
-class KafkaTopic:
-    """Kafka TOPIC"""
-
-    def __init__(self, bootstrap_servers: "KafkaServer", topic: str, group_id: Optional[str] = None,
-                 ssh_tunnel: Optional["SshTunnel"] = None):
-        self.bootstrap_servers = bootstrap_servers
-        self.topic = topic
-        self.group_id = group_id
-        self.ssh_tunnel = ssh_tunnel
-
-
 class RdsInstance:
     """RDS 实例"""
 
-    def __init__(self, host: str, port: int, user: str, passwd: str, ssh_tunnel: Optional["SshTunnel"] = None):
+    def __init__(self, host: str, port: int, user: str, passwd: str, ssh_tunnel: Optional[SshTunnel] = None):
         self.host = host
         self.port = port
         self.user = user
@@ -40,16 +27,6 @@ class RdsTable:
         self.instance = instance
         self.schema = schema
         self.table = table
-
-
-class SshTunnel:
-    """SSH 隧道"""
-
-    def __init__(self, host: str, port: int, username: str, pkey: str):
-        self.host = host
-        self.port = port
-        self.username = username
-        self.pkey = pkey
 
 
 class RdsTableWithMonitorKafkaTopic:
