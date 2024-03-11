@@ -52,7 +52,7 @@ class KafkaTopic:
     """Kafka TOPIC"""
 
     def __init__(self, kafka_server: "KafkaServer", topic: str, group_id: Optional[str] = None):
-        self.bootstrap_servers = kafka_server
+        self.kafka_server = kafka_server
         self.topic = topic
         self.group = group_id
 

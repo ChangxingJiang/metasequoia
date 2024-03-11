@@ -6,6 +6,7 @@ import streamlit as st
 from kafka import KafkaConsumer, TopicPartition
 
 from metasequoia.core import PluginBase
+from metasequoia.utils import kafka_util
 
 
 class PluginGetKafkaTopicOffset(PluginBase):
@@ -21,16 +22,23 @@ class PluginGetKafkaTopicOffset(PluginBase):
         st.divider()
 
         # 输入 KafkaTopic 对象
-        kafka_topic = self.input_kafka_topic(is_need_group=True)
+        kafka_topic = self.input_kafka_topic(is_need_group=False)
 
         st.divider()
+
+        if st.button("查询 TOPIC 配置信息"):
+            topic_configs = kafka_util.get_topic_configs(kafka_topic)
+            topic_str = "\n".join([
+                f"- {config_name} = {config_value}" for config_name, config_value in topic_configs.items()
+            ])
+            st.markdown(topic_str)
 
         # 创建 Kafka 连接
         if st.button("查询各分区偏移量"):
             self.check_is_not_none(kafka_topic, "未输入完整的 Kafka 集群、TOPIC 和消费者组信息")
 
             consumer = KafkaConsumer(group_id=kafka_topic.group,
-                                     bootstrap_servers=kafka_topic.bootstrap_servers,
+                                     bootstrap_servers=kafka_topic.kafka_server,
                                      api_version=(0, 11))
 
             # 查询并打印每个 TOPIC 的偏移量
