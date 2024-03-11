@@ -20,7 +20,7 @@ class HostPort:
             return HostPort(url.strip(), None)
         else:
             host, port = url.split(":")
-            return HostPort(url.strip(), int(port))
+            return HostPort(host.strip(), int(port))
 
     @property
     def host(self) -> str:

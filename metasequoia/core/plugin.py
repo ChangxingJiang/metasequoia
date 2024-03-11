@@ -5,8 +5,10 @@ from typing import Optional, Any
 import streamlit as st
 
 from metasequoia.connector.kafka import KafkaServer, KafkaTopic
+from metasequoia.connector.ssh_tunnel import SshTunnel
 from metasequoia.core.config import configuration
-from metasequoia.core.objects import RdsInstance, SshTunnel, RdsTable
+from metasequoia.core.objects import RdsInstance, RdsTable
+from metasequoia.utils.kafka_util import list_topics
 from metasequoia.utils.mysql_util import show_databases, show_tables
 from streamlit_app import StreamlitPage
 
@@ -53,7 +55,13 @@ class PluginBase(StreamlitPage, abc.ABC):
             用户是否必须输入消费者组
         """
         kafka_server = self.input_kafka_server()
-        topic = st.text_input(label="TOPIC", value=None)
+        topic_list = list_topics(kafka_server) if kafka_server is not None else []
+        topic = st.selectbox(label="TOPIC",
+                             options=topic_list,
+                             placeholder="请选择TOPIC",
+                             index=None,
+                             key=self.get_streamlit_key())
+        # topic = st.text_input(label="TOPIC", value=None)
         group_id = st.text_input(label="消费者组", value=None)
 
         if (kafka_server is not None and topic is not None and

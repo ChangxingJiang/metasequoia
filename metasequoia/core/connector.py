@@ -7,9 +7,9 @@ from typing import Optional
 import pymysql
 import sshtunnel
 
+from metasequoia.connector.ssh_tunnel import SshTunnel
 from metasequoia.core.config import Configuration
-from metasequoia.core.objects import SshTunnel, RdsInstance
-from metasequoia.connector.kafka import KafkaServer
+from metasequoia.core.objects import RdsInstance
 
 
 class MysqlConn:
