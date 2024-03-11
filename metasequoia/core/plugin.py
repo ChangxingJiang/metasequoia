@@ -4,8 +4,9 @@ from typing import Optional, Any
 
 import streamlit as st
 
+from metasequoia.connector.kafka import KafkaServer, KafkaTopic
 from metasequoia.core.config import configuration
-from metasequoia.core.objects import KafkaTopic, RdsInstance, SshTunnel, RdsTable, KafkaServer
+from metasequoia.core.objects import RdsInstance, SshTunnel, RdsTable
 from metasequoia.utils.mysql_util import show_databases, show_tables
 from streamlit_app import StreamlitPage
 

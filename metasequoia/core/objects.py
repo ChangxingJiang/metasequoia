@@ -1,25 +1,11 @@
-from typing import List, Optional
+from typing import Optional
 
-__all__ = ["KafkaTopic", "RdsInstance", "RdsTable", "SshTunnel", "RdsTableWithMonitorKafkaTopic"]
+from metasequoia.connector.kafka import KafkaTopic
+
+__all__ = ["RdsInstance", "RdsTable", "SshTunnel", "RdsTableWithMonitorKafkaTopic"]
 
 
 # TODO 将各个属性修改为不可直接修改
-
-
-class KafkaServer:
-    def __init__(self, bootstrap_servers: List[str],
-                 ssh_tunnel: Optional["SshTunnel"] = None):
-        self.bootstrap_servers = bootstrap_servers
-        self.ssh_tunnel = ssh_tunnel
-
-
-class KafkaTopic:
-    """Kafka TOPIC"""
-
-    def __init__(self, kafka_server: "KafkaServer", topic: str, group_id: Optional[str] = None):
-        self.bootstrap_servers = kafka_server
-        self.topic = topic
-        self.group_id = group_id
 
 
 class RdsInstance:

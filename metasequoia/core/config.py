@@ -2,7 +2,9 @@ import json
 import os
 from typing import Dict, Any, List
 
-from metasequoia.core.objects import RdsInstance, SshTunnel, KafkaServer
+from metasequoia.core.objects import RdsInstance, SshTunnel
+from metasequoia.connector.kafka import KafkaServer
+
 
 __all__ = ["configuration", "Configuration", "MODE"]
 
