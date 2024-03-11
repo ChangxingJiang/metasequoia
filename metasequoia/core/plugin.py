@@ -3,17 +3,45 @@ import inspect
 from typing import Optional, Any
 
 import streamlit as st
-from streamlit_app import StreamlitPage
 
 from metasequoia.core.config import configuration
 from metasequoia.core.objects import KafkaTopic, RdsInstance, SshTunnel, RdsTable, KafkaServer
 from metasequoia.utils.mysql_util import show_databases, show_tables
+from streamlit_app import StreamlitPage
 
 __all__ = ["PluginBase"]
 
 
 class PluginBase(StreamlitPage, abc.ABC):
     """插件的抽象基类"""
+
+    def _input_kafka_servers_name(self) -> str:
+        """【输入】内置 Kafka 集群名称"""
+        return st.selectbox(label="请选择内置Kafka集群",
+                            options=configuration.get_kafka_list(),
+                            placeholder="请选择集群",
+                            index=None,
+                            key=self.get_streamlit_key())
+
+    def input_kafka_server(self) -> Optional[KafkaServer]:
+        """【输入】RDS 实例"""
+        mode = st.radio(label="是否使用内置Kafka集群",
+                        options=["使用内置Kafka集群", "使用自定义Kafka集群"],
+                        index=0,
+                        key=self.get_streamlit_key())
+        if mode == "使用内置Kafka集群":
+            # 使用内置 RDS 实例
+            name = self._input_kafka_servers_name()
+            if name is not None:
+                return configuration.get_kafka_server(name)
+        else:
+            bootstrap_servers = st.text_input(label="kafka集群",
+                                              value=None,
+                                              placeholder="例如：server1:9092,server2:9092")
+            ssh_tunnel = self.input_ssh_tunnel()
+            if bootstrap_servers is not None:
+                return KafkaServer(bootstrap_servers.split(","), ssh_tunnel=ssh_tunnel)
+        return None
 
     def input_kafka_topic(self, is_need_group: bool = False) -> Optional[KafkaTopic]:
         """【输入】Kafka Topic
@@ -23,19 +51,15 @@ class PluginBase(StreamlitPage, abc.ABC):
         is_need_group : bool, default = False
             用户是否必须输入消费者组
         """
-        bootstrap_servers = st.text_input(label="kafka集群",
-                                          value=None,
-                                          placeholder="例如：server1:9092,server2:9092")
-        ssh_tunnel = self.input_ssh_tunnel()
+        kafka_server = self.input_kafka_server()
         topic = st.text_input(label="TOPIC", value=None)
         group_id = st.text_input(label="消费者组", value=None)
 
-        if (bootstrap_servers is not None and topic is not None and
+        if (kafka_server is not None and topic is not None and
                 (is_need_group is False or (group_id is not None and group_id != ""))):
-            return KafkaTopic(bootstrap_servers=KafkaServer(bootstrap_servers.split(",")),
+            return KafkaTopic(kafka_server=kafka_server,
                               topic=topic,
-                              group_id=group_id,
-                              ssh_tunnel=ssh_tunnel)
+                              group_id=group_id)
         else:
             return None
 

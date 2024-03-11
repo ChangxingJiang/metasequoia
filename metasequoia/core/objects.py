@@ -7,19 +7,19 @@ __all__ = ["KafkaTopic", "RdsInstance", "RdsTable", "SshTunnel", "RdsTableWithMo
 
 
 class KafkaServer:
-    def __init__(self, bootstrap_server: List[str]):
-        self.bootstrap_server = bootstrap_server
+    def __init__(self, bootstrap_servers: List[str],
+                 ssh_tunnel: Optional["SshTunnel"] = None):
+        self.bootstrap_servers = bootstrap_servers
+        self.ssh_tunnel = ssh_tunnel
 
 
 class KafkaTopic:
     """Kafka TOPIC"""
 
-    def __init__(self, bootstrap_servers: "KafkaServer", topic: str, group_id: Optional[str] = None,
-                 ssh_tunnel: Optional["SshTunnel"] = None):
-        self.bootstrap_servers = bootstrap_servers
+    def __init__(self, kafka_server: "KafkaServer", topic: str, group_id: Optional[str] = None):
+        self.bootstrap_servers = kafka_server
         self.topic = topic
         self.group_id = group_id
-        self.ssh_tunnel = ssh_tunnel
 
 
 class RdsInstance:

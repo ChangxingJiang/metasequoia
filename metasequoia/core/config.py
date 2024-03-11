@@ -2,7 +2,7 @@ import json
 import os
 from typing import Dict, Any, List
 
-from metasequoia.core.objects import RdsInstance, SshTunnel
+from metasequoia.core.objects import RdsInstance, SshTunnel, KafkaServer
 
 __all__ = ["configuration", "Configuration", "MODE"]
 
@@ -63,6 +63,20 @@ class Configuration:
     def get_ssh_list(self):
         """获取 SSH 列表"""
         return list(self._configuration["SSH"].keys())
+
+    def get_kafka_list(self) -> List[str]:
+        """获取 Kafka 列表"""
+        return list(self._configuration["Kafka"].keys())
+
+    def get_kafka_info(self, name: str, mode: str = MODE) -> Dict[str, Any]:
+        return self._confirm_params("Kafka", self._get_section("Kafka", name, mode), ["bootstrap_servers"])
+
+    def get_kafka_server(self, name: str) -> KafkaServer:
+        """获取 Kafka Servers 对象"""
+        kafka_info = self.get_kafka_info(name)
+        ssh_tunnel = self.get_ssh_tunnel(kafka_info["use_ssh"]) if kafka_info.get("use_ssh") else None
+        return KafkaServer(bootstrap_servers=kafka_info["bootstrap_servers"],
+                           ssh_tunnel=ssh_tunnel)
 
     def _get_section(self, section: str, name: str, mode: str) -> Dict[str, Any]:
         """获取每种类型的配置信息数据"""
