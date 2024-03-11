@@ -61,7 +61,6 @@ class PluginBase(StreamlitPage, abc.ABC):
                              placeholder="请选择TOPIC",
                              index=None,
                              key=self.get_streamlit_key())
-        # topic = st.text_input(label="TOPIC", value=None)
         group_id = st.text_input(label="消费者组", value=None)
 
         if (kafka_server is not None and topic is not None and
