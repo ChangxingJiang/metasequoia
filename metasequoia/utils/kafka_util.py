@@ -17,7 +17,7 @@ def get_topic_configs(kafka_topic: KafkaTopic):
     """获取 TOPIC 的配置信息"""
     with ConnKafkaAdminClient(kafka_topic.kafka_server) as kafka_admin_client:
         configs = kafka_admin_client.describe_configs(config_resources=[
-            ConfigResource(resource_type=ConfigResourceType.TOPIC, name="a69c1.proto.prism1.person_rank_table")
+            ConfigResource(resource_type=ConfigResourceType.TOPIC, name=kafka_topic.topic)
         ], include_synonyms=False)
 
         topic_configs = {}
