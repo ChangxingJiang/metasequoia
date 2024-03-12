@@ -47,14 +47,43 @@ class KafkaServer:
     def get_host_list(self) -> List[HostPort]:
         return [HostPort.create_by_url(server) for server in self._bootstrap_servers]
 
+    def __hash__(self):
+        return hash((tuple(self._bootstrap_servers), self._ssh_tunnel))
+
+    def __eq__(self, other):
+        return (isinstance(other, KafkaServer) and
+                self._bootstrap_servers == other._bootstrap_servers and
+                self._ssh_tunnel == other._ssh_tunnel)
+
 
 class KafkaTopic:
     """Kafka TOPIC"""
 
     def __init__(self, kafka_server: "KafkaServer", topic: str, group_id: Optional[str] = None):
-        self.kafka_server = kafka_server
-        self.topic = topic
-        self.group = group_id
+        self._kafka_server = kafka_server
+        self._topic = topic
+        self._group = group_id
+
+    @property
+    def kafka_server(self) -> "KafkaServer":
+        return self._kafka_server
+
+    @property
+    def topic(self) -> str:
+        return self._topic
+
+    @property
+    def group(self) -> str:
+        return self._group
+
+    def __hash__(self):
+        return hash((self._kafka_server, self._topic, self._group))
+
+    def __eq__(self, other):
+        return (isinstance(other, KafkaTopic) and
+                self._kafka_server == other._kafka_server and
+                self._topic == other._topic and
+                self._group == other._group)
 
 
 class ConnKafkaAdminClient:
