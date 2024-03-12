@@ -6,7 +6,7 @@ import streamlit as st
 from kafka import KafkaConsumer, TopicPartition
 
 from metasequoia.core import PluginBase
-from metasequoia.utils import kafka_util
+from metasequoia.core import streamlit_cache_util
 
 
 class PluginGetKafkaTopicOffset(PluginBase):
@@ -27,7 +27,7 @@ class PluginGetKafkaTopicOffset(PluginBase):
         st.divider()
 
         if st.button("查询 TOPIC 配置信息"):
-            topic_configs = kafka_util.get_topic_configs(kafka_topic)
+            topic_configs = streamlit_cache_util.kafka_get_topic_configs(kafka_topic)
             topic_str = "\n".join([
                 f"- {config_name} = {config_value}" for config_name, config_value in topic_configs.items()
             ])

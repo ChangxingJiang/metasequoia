@@ -1,6 +1,6 @@
 from typing import Optional
 
-from metasequoia.connector.kafka import KafkaTopic
+from metasequoia.connector.kafka_connector import KafkaTopic
 from metasequoia.connector.ssh_tunnel import SshTunnel
 
 __all__ = ["RdsInstance", "RdsTable", "RdsTableWithMonitorKafkaTopic"]
