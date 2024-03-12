@@ -5,11 +5,11 @@
 import streamlit as st
 from kafka import KafkaConsumer, TopicPartition
 
-from metasequoia.core import PluginBase
 from metasequoia.components import streamlit_cache_util
+from metasequoia.core import PluginBase
 
 
-class PluginGetKafkaTopicOffset(PluginBase):
+class PluginGetKafkaTopicInfo(PluginBase):
     @staticmethod
     def page_name() -> str:
         return "【Kafka】TOPIC信息查询工具"
@@ -28,10 +28,20 @@ class PluginGetKafkaTopicOffset(PluginBase):
 
         if st.button("查询 TOPIC 配置信息"):
             topic_configs = streamlit_cache_util.kafka_get_topic_configs(kafka_topic)
-            topic_str = "\n".join([
-                f"- {config_name} = {config_value}" for config_name, config_value in topic_configs.items()
-            ])
-            st.markdown(topic_str)
+            topic_config_frame = []
+            for config_name, config_value in topic_configs.items():
+                topic_config_frame.append({
+                    "配置名": config_name,
+                    "配置值": config_value
+                })
+
+            retention_ms = int(topic_configs["retention.ms"]) / 1000 / 3600
+            st.markdown(f"##### 重要配置信息\n"
+                        f"\n"
+                        f"- 过期时间：{retention_ms}（小时）")
+
+            st.markdown("##### 完整配置信息")
+            st.table(topic_config_frame)
 
         # 创建 Kafka 连接
         if st.button("查询各分区偏移量"):

@@ -14,7 +14,7 @@ pip install metasequoia
 import sys
 
 from metasequoia.application.application import MetaSequoiaApplication
-from metasequoia.plugins import PluginGetKafkaTopicOffset
+from metasequoia.plugins import PluginGetKafkaTopicInfo
 
 
 def main():
@@ -23,7 +23,7 @@ def main():
 
     application = MetaSequoiaApplication(sys.argv[1], application_deploy_dir)
     application.set_name("Metasequoia Demo")
-    application.add_plugin("Kafka 工具", PluginGetKafkaTopicOffset)
+    application.add_plugin("Kafka 工具", PluginGetKafkaTopicInfo)
     application.deploy_and_start()
 
 
@@ -49,5 +49,6 @@ if __name__ == "__main__":
 
 - 新增：Kafka 连接器；streamlit Kafka 输入组件
 - 重构：connector 模块，优化连接信息对象
+- 优化：get_kafka_topic_info 插件
 
 ##### 0.1.0 初始化
