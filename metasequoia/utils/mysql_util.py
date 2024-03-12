@@ -8,9 +8,8 @@ from typing import Optional
 import pymysql
 import pymysql.cursors
 
+from metasequoia.connector.rds_connector import RdsInstance, MysqlConn
 from metasequoia.connector.ssh_tunnel import SshTunnel
-from metasequoia.core.connector import MysqlConn
-from metasequoia.core.objects import RdsInstance
 
 
 @functools.lru_cache(maxsize=32)

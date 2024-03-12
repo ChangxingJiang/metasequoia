@@ -5,10 +5,10 @@ from typing import Optional, Any
 import streamlit as st
 
 from metasequoia.connector.kafka_connector import KafkaServer, KafkaTopic
+from metasequoia.connector.rds_connector import RdsInstance, RdsTable
 from metasequoia.connector.ssh_tunnel import SshTunnel
 from metasequoia.core import streamlit_cache_util
 from metasequoia.core.config import configuration
-from metasequoia.core.objects import RdsInstance, RdsTable
 from metasequoia.utils.mysql_util import show_databases, show_tables
 from streamlit_app import StreamlitPage
 
@@ -78,7 +78,7 @@ class PluginBase(StreamlitPage, abc.ABC):
         rds_schema = self.input_rds_schema(rds_instance, ssh_tunnel)
         rds_table_name = self.input_rds_table_name(rds_instance, rds_schema, ssh_tunnel)
         if rds_instance is not None and rds_schema is not None and rds_table_name is not None:
-            rds_instance.ssh_tunnel = ssh_tunnel
+            rds_instance.set_ssh_tunnel(ssh_tunnel)
             rds_table = RdsTable(rds_instance, rds_schema, rds_table_name)
             return rds_table
         else:

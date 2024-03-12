@@ -2,6 +2,7 @@
 包含对象：
 - KafkaServer
 - KafkaTopic
+- ConnKafkaAdminClient
 
 包含连接器：
 """

@@ -1,5 +1,10 @@
 """
-各类连接器
+包含对象：
+- RdsInstance
+- RdsTable
+
+包含连接器：
+- MysqlConn
 """
 
 from typing import Optional
@@ -8,8 +13,65 @@ import pymysql
 import sshtunnel
 
 from metasequoia.connector.ssh_tunnel import SshTunnel
-from metasequoia.core.config import Configuration
-from metasequoia.core.objects import RdsInstance
+
+# from metasequoia.core.config import Configuration  # TODO 移除反向引用
+
+__all__ = ["RdsInstance", "RdsTable", "MysqlConn"]
+
+
+class RdsInstance:
+    """RDS 实例"""
+
+    def __init__(self, host: str, port: int, user: str, passwd: str, ssh_tunnel: Optional[SshTunnel] = None):
+        self._host = host
+        self._port = port
+        self._user = user
+        self._passwd = passwd
+        self._ssh_tunnel = ssh_tunnel
+
+    @property
+    def host(self) -> str:
+        return self._host
+
+    @property
+    def port(self) -> int:
+        return self._port
+
+    @property
+    def user(self) -> str:
+        return self._user
+
+    @property
+    def passwd(self) -> str:
+        return self._passwd
+
+    @property
+    def ssh_tunnel(self) -> SshTunnel:
+        return self._ssh_tunnel
+
+    def set_ssh_tunnel(self, ssh_tunnel: Optional[SshTunnel]):
+        self._ssh_tunnel = ssh_tunnel
+
+
+class RdsTable:
+    """RDS 表"""
+
+    def __init__(self, instance: "RdsInstance", schema: str, table: str):
+        self._instance = instance
+        self._schema = schema
+        self._table = table
+
+    @property
+    def instance(self) -> "RdsInstance":
+        return self._instance
+
+    @property
+    def schema(self) -> str:
+        return self._schema
+
+    @property
+    def table(self) -> str:
+        return self._table
 
 
 class MysqlConn:
@@ -44,7 +106,9 @@ class MysqlConn:
         return MysqlConn(rds_instance=rds_instance, schema=schema, ssh_tunnel_info=ssh_tunnel_info)
 
     @staticmethod
-    def create_by_rds_name(configuration: Configuration, name: str, schema: Optional[str] = None) -> "MysqlConn":
+    # TODO 待移除反向引用
+    # def create_by_rds_name(configuration: Configuration, name: str, schema: Optional[str] = None) -> "MysqlConn":
+    def create_by_rds_name(configuration, name: str, schema: Optional[str] = None) -> "MysqlConn":
         # 读取 MySQL 实例的配置
         rds_info_conf = configuration.get_rds(name)
         rds_info = RdsInstance(host=rds_info_conf["host"],

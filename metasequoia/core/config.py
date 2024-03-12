@@ -3,8 +3,8 @@ import os
 from typing import Dict, Any, List
 
 from metasequoia.connector.kafka_connector import KafkaServer
+from metasequoia.connector.rds_connector import RdsInstance
 from metasequoia.connector.ssh_tunnel import SshTunnel
-from metasequoia.core.objects import RdsInstance
 
 __all__ = ["configuration", "Configuration", "MODE"]
 
