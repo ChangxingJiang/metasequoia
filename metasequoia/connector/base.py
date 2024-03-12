@@ -29,3 +29,11 @@ class HostPort:
     @property
     def port(self) -> Optional[int]:
         return self._port
+
+    def __hash__(self):
+        return hash((self._host, self._port))
+
+    def __eq__(self, other):
+        return (isinstance(other, HostPort) and
+                self._host == other._host and
+                self._port == other._port)

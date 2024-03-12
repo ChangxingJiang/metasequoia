@@ -6,7 +6,7 @@ import streamlit as st
 from kafka import KafkaConsumer, TopicPartition
 
 from metasequoia.core import PluginBase
-from metasequoia.core import streamlit_cache_util
+from metasequoia.components import streamlit_cache_util
 
 
 class PluginGetKafkaTopicOffset(PluginBase):

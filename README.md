@@ -37,7 +37,17 @@ if __name__ == "__main__":
 ## 项目结构
 
 - `application`：部署和应用
+- `components`：组件
 - `connector`：连接器
 - `core`：核心逻辑
 - `plugins`：内置插件
 - `utils`：工具方法
+
+# 变更历史
+
+#### 0.1.1
+
+- 新增：Kafka 连接器；streamlit Kafka 输入组件
+- 重构：connector 模块，优化连接信息对象
+
+##### 0.1.0 初始化
