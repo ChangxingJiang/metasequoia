@@ -1,7 +1,7 @@
 import sys
 
 from metasequoia.application.application import MetaSequoiaApplication
-from metasequoia.plugins import PluginGetKafkaTopicOffset
+from metasequoia.plugins import PluginGetKafkaTopicInfo
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
     # 构造默认服务并部署
     application = MetaSequoiaApplication(sys.argv[1], application_deploy_dir)
     application.set_name("Metasequoia Demo")
-    application.add_plugin("Kafka 工具", PluginGetKafkaTopicOffset)
+    application.add_plugin("Kafka 工具", PluginGetKafkaTopicInfo)
     application.deploy_and_start()
 
 

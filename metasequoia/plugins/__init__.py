@@ -1,1 +1,1 @@
-from metasequoia.plugins.get_kafka_topic_offset.plugin_main import PluginGetKafkaTopicOffset
+from metasequoia.plugins.get_kafka_topic_info.plugin_main import PluginGetKafkaTopicInfo
