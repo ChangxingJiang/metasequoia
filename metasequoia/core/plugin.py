@@ -7,9 +7,9 @@ import streamlit as st
 from metasequoia.connector.kafka_connector import KafkaServer, KafkaTopic
 from metasequoia.connector.rds_connector import RdsInstance, RdsTable
 from metasequoia.connector.ssh_tunnel import SshTunnel
-from metasequoia.core import streamlit_cache_util
+from metasequoia.components import streamlit_cache_util
 from metasequoia.core.config import configuration
-from metasequoia.utils.mysql_util import show_databases, show_tables
+from metasequoia.components.streamlit_cache_util import show_databases, show_tables
 from streamlit_app import StreamlitPage
 
 __all__ = ["PluginBase"]

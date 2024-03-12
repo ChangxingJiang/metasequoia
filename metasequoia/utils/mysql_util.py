@@ -12,21 +12,18 @@ from metasequoia.connector.rds_connector import RdsInstance, MysqlConn
 from metasequoia.connector.ssh_tunnel import SshTunnel
 
 
-@functools.lru_cache(maxsize=32)
 def show_databases(rds_instance: RdsInstance, ssh_tunnel: Optional[SshTunnel] = None):
     """执行：SHOW DATABASES"""
     with MysqlConn.create_by_rds_instance(rds_instance=rds_instance, ssh_tunnel_info=ssh_tunnel) as conn:
         return conn_show_databases(conn)
 
 
-@functools.lru_cache(maxsize=32)
 def show_tables(rds_instance: RdsInstance, schema: str, ssh_tunnel: Optional[SshTunnel] = None):
     """执行：SHOW TABLES"""
     with MysqlConn.create_by_rds_instance(rds_instance=rds_instance, schema=schema, ssh_tunnel_info=ssh_tunnel) as conn:
         return conn_show_tables(conn, schema)
 
 
-@functools.lru_cache(maxsize=32)
 def show_create_table(rds_instance: RdsInstance, schema: str, table: str, ssh_tunnel: Optional[SshTunnel] = None):
     """执行：SHOW CREATE TABLE"""
     with MysqlConn.create_by_rds_instance(rds_instance=rds_instance, schema=schema, ssh_tunnel_info=ssh_tunnel) as conn:

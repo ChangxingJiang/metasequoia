@@ -37,6 +37,7 @@ if __name__ == "__main__":
 ## 项目结构
 
 - `application`：部署和应用
+- `components`：组件
 - `connector`：连接器
 - `core`：核心逻辑
 - `plugins`：内置插件
