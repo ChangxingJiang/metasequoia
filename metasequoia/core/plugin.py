@@ -4,12 +4,12 @@ from typing import Optional, Any
 
 import streamlit as st
 
+from metasequoia.components import streamlit_cache_util
+from metasequoia.components.streamlit_cache_util import show_databases, show_tables
 from metasequoia.connector.kafka_connector import KafkaServer, KafkaTopic
 from metasequoia.connector.rds_connector import RdsInstance, RdsTable
 from metasequoia.connector.ssh_tunnel import SshTunnel
-from metasequoia.components import streamlit_cache_util
 from metasequoia.core.config import configuration
-from metasequoia.components.streamlit_cache_util import show_databases, show_tables
 from streamlit_app import StreamlitPage
 
 __all__ = ["PluginBase"]
@@ -46,14 +46,8 @@ class PluginBase(StreamlitPage, abc.ABC):
                 return KafkaServer(bootstrap_servers.split(","), ssh_tunnel=ssh_tunnel)
         return None
 
-    def input_kafka_topic(self, is_need_group: bool = False) -> Optional[KafkaTopic]:
-        """【输入】Kafka Topic
-
-        Parameters
-        ----------
-        is_need_group : bool, default = False
-            用户是否必须输入消费者组
-        """
+    def input_kafka_topic(self) -> Optional[KafkaTopic]:
+        """【输入】Kafka Topic"""
         kafka_server = self.input_kafka_server()
         topic_list = streamlit_cache_util.kafka_list_topics(kafka_server) if kafka_server is not None else []
         topic = st.selectbox(label="TOPIC",
@@ -61,13 +55,9 @@ class PluginBase(StreamlitPage, abc.ABC):
                              placeholder="请选择TOPIC",
                              index=None,
                              key=self.get_streamlit_key())
-        group_id = st.text_input(label="消费者组", value=None)
 
-        if (kafka_server is not None and topic is not None and
-                (is_need_group is False or (group_id is not None and group_id != ""))):
-            return KafkaTopic(kafka_server=kafka_server,
-                              topic=topic,
-                              group_id=group_id)
+        if kafka_server is not None and topic is not None:
+            return KafkaTopic(kafka_server=kafka_server, topic=topic)
         else:
             return None
 

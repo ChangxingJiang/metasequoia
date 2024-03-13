@@ -60,10 +60,9 @@ class KafkaServer:
 class KafkaTopic:
     """Kafka TOPIC"""
 
-    def __init__(self, kafka_server: "KafkaServer", topic: str, group_id: Optional[str] = None):
+    def __init__(self, kafka_server: "KafkaServer", topic: str):
         self._kafka_server = kafka_server
         self._topic = topic
-        self._group = group_id
 
     @property
     def kafka_server(self) -> "KafkaServer":
@@ -73,18 +72,13 @@ class KafkaTopic:
     def topic(self) -> str:
         return self._topic
 
-    @property
-    def group(self) -> str:
-        return self._group
-
     def __hash__(self):
-        return hash((self._kafka_server, self._topic, self._group))
+        return hash((self._kafka_server, self._topic))
 
     def __eq__(self, other):
         return (isinstance(other, KafkaTopic) and
                 self._kafka_server == other._kafka_server and
-                self._topic == other._topic and
-                self._group == other._group)
+                self._topic == other._topic)
 
 
 class ConnKafkaAdminClient:
