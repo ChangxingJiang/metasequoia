@@ -24,14 +24,14 @@ class PluginBase(StreamlitPage, abc.ABC):
                             options=configuration.get_kafka_list(),
                             placeholder="请选择集群",
                             index=None,
-                            key=self.get_streamlit_key())
+                            key=self.get_streamlit_default_key())
 
     def input_kafka_server(self) -> Optional[KafkaServer]:
         """【输入】RDS 实例"""
         mode = st.radio(label="是否使用内置Kafka集群",
                         options=["使用内置Kafka集群", "使用自定义Kafka集群"],
                         index=0,
-                        key=self.get_streamlit_key())
+                        key=self.get_streamlit_default_key())
         if mode == "使用内置Kafka集群":
             # 使用内置 RDS 实例
             name = self._input_kafka_servers_name()
@@ -54,7 +54,7 @@ class PluginBase(StreamlitPage, abc.ABC):
                              options=topic_list,
                              placeholder="请选择TOPIC",
                              index=None,
-                             key=self.get_streamlit_key())
+                             key=self.get_streamlit_default_key())
 
         if kafka_server is not None and topic is not None:
             return KafkaTopic(kafka_server=kafka_server, topic=topic)
@@ -79,7 +79,7 @@ class PluginBase(StreamlitPage, abc.ABC):
         mode = st.radio(label="是否使用内置RDS实例",
                         options=["使用内置RDS实例", "自定义RDS实例"],
                         index=0,
-                        key=self.get_streamlit_key())
+                        key=self.get_streamlit_default_key())
         if mode == "使用内置RDS实例":
             # 使用内置 RDS 实例
             name = self._input_rds_name()
@@ -103,14 +103,14 @@ class PluginBase(StreamlitPage, abc.ABC):
                             placeholder="请选择实例",
                             index=None,
                             format_func=configuration.get_rds_name,
-                            key=self.get_streamlit_key())
+                            key=self.get_streamlit_default_key())
 
     def input_ssh_tunnel(self) -> Optional[SshTunnel]:
         """【输入】SSH 隧道"""
         ssh_tunnel_name = st.selectbox(label="请选择SSH隧道",
                                        options=["不使用SSH隧道"] + configuration.get_ssh_list(),
                                        index=0,
-                                       key=self.get_streamlit_key())
+                                       key=self.get_streamlit_default_key())
         if ssh_tunnel_name != "不使用SSH隧道":
             return configuration.get_ssh_tunnel(ssh_tunnel_name)
         else:
@@ -123,7 +123,7 @@ class PluginBase(StreamlitPage, abc.ABC):
                             options=databases,
                             placeholder="请选择数据库",
                             index=None,
-                            key=self.get_streamlit_key())
+                            key=self.get_streamlit_default_key())
 
     def input_rds_table_name(self, rds_instance: RdsInstance, schema: Optional[str], ssh_tunnel: Optional[SshTunnel]):
         """【输入】RDS 表名"""
@@ -135,7 +135,7 @@ class PluginBase(StreamlitPage, abc.ABC):
                             options=tables,
                             placeholder="请选择表",
                             index=None,
-                            key=self.get_streamlit_key())
+                            key=self.get_streamlit_default_key())
 
     @staticmethod
     def check_is_not_none(obj: Optional[Any], prompt_text: str) -> None:
@@ -151,15 +151,3 @@ class PluginBase(StreamlitPage, abc.ABC):
         if obj is None:
             st.error(prompt_text)
             st.stop()
-
-    def get_streamlit_key(self) -> str:
-        """Streamlit 的 key 自动分配器：根据调用路径构造，理论上不存在同名的情况"""
-        stack_list = []
-        frame = inspect.currentframe()
-        while frame.f_back:
-            stack_list.append(f"{frame.f_back.f_code.co_name}:{frame.f_back.f_lineno}")
-            if frame.f_back.f_code.co_name == "draw_page":  # 如果已经追溯到 draw_page，则不再继续递归栈信息
-                break
-            frame = frame.f_back
-        stack_key = "-".join(reversed(stack_list))  # 根据调用链路，获取 draw_page 函数之后的唯一键
-        return f"[{self.__class__.__name__}]{stack_key}"
