@@ -8,6 +8,7 @@ import streamlit as st
 
 from metasequoia.components import cache_data
 from metasequoia.components.cache_data import kafka_list_topics, kafka_list_consumer_groups
+from metasequoia.connector.hive_connector import HiveInstance, HiveTable
 from metasequoia.connector.kafka_connector import KafkaServer, KafkaTopic, KafkaGroup
 from metasequoia.connector.rds_connector import RdsInstance, RdsTable
 from metasequoia.connector.ssh_tunnel import SshTunnel
@@ -162,6 +163,58 @@ def input_kafka_group(use_ssh: bool = False) -> Optional[KafkaGroup]:
 
     if kafka_server is not None and group is not None:
         return KafkaGroup(kafka_server=kafka_server, group=group)
+    else:
+        return None
+
+
+# ---------- Hive 相关输入组件 ----------
+
+
+def input_hive_instance_name() -> str:
+    """【输入】内置 Hive 集群名称"""
+    configuration = cache_data.load_configuration()
+    return st.selectbox(label="请选择内置Hive集群",
+                        options=configuration.get_hive_list(),
+                        placeholder="请选择集群",
+                        index=None,
+                        key=StreamlitPage.get_streamlit_default_key())
+
+
+def input_hive_instance(use_ssh: bool = False) -> Optional[HiveInstance]:
+    """【输入】Hive 实例"""
+    configuration = cache_data.load_configuration()
+    mode = st.radio(label="是否使用内置Hive集群",
+                    options=["使用内置Hive集群", "使用自定义Hive集群"],
+                    index=0,
+                    key=StreamlitPage.get_streamlit_default_key())
+    if mode == "使用内置Hive集群":
+        name = input_hive_instance_name()
+        username = st.text_input(label="username", value=None)
+        if name is not None and username is not None:
+            hive_instance = configuration.get_hive_instance(name)
+            hive_instance.set_hive_username(username)
+            return hive_instance
+    else:
+        hosts = st.text_input(label="Hive集群", value=None)
+        port = int(st.text_input(label="端口", value=None))
+        if use_ssh is True:
+            ssh_tunnel = input_ssh_tunnel()
+        else:
+            ssh_tunnel = None
+        username = st.text_input(label="username", value=None)
+        if hosts is not None:
+            return HiveInstance(hosts=hosts.split(","), port=port, username=username, ssh_tunnel=ssh_tunnel)
+    return None
+
+
+def input_hive_table(use_ssh: bool = False) -> Optional[HiveTable]:
+    """【输入】Hive 表"""
+    hive_instance = input_hive_instance(use_ssh=use_ssh)
+    hive_schema = st.text_input(label="schema", value=None)
+    hive_table_name = st.text_input(label="table", value=None)
+    if hive_instance is not None and hive_schema is not None and hive_table_name is not None:
+        hive_table = HiveTable(hive_instance, hive_schema, hive_table_name)
+        return hive_table
     else:
         return None
 

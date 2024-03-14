@@ -2,6 +2,7 @@ import json
 import os
 from typing import Dict, Any, List
 
+from metasequoia.connector.hive_connector import HiveInstance
 from metasequoia.connector.kafka_connector import KafkaServer
 from metasequoia.connector.rds_connector import RdsInstance
 from metasequoia.connector.ssh_tunnel import SshTunnel
@@ -79,6 +80,20 @@ class Configuration:
         ssh_tunnel = self.get_ssh_tunnel(kafka_info["use_ssh"]) if kafka_info.get("use_ssh") else None
         return KafkaServer(bootstrap_servers=kafka_info["bootstrap_servers"],
                            ssh_tunnel=ssh_tunnel)
+
+    def get_hive_list(self) -> List[str]:
+        """获取 Hive 列表"""
+        return list(self._configuration["Hive"].keys())
+
+    def get_hive_info(self, name: str, mode: str = MODE) -> Dict[str, Any]:
+        return self._confirm_params("Hive", self._get_section("Hive", name, mode), ["hosts", "port"])
+
+    def get_hive_instance(self, name: str) -> HiveInstance:
+        """获取 Hive 列表"""
+        kafka_info = self.get_kafka_info(name)
+        ssh_tunnel = self.get_ssh_tunnel(kafka_info["use_ssh"]) if kafka_info.get("use_ssh") else None
+        return HiveInstance(hosts=kafka_info["hosts"], port=kafka_info["port"],
+                            ssh_tunnel=ssh_tunnel)
 
     def _get_section(self, section: str, name: str, mode: str) -> Dict[str, Any]:
         """获取每种类型的配置信息数据"""
