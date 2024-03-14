@@ -18,7 +18,10 @@ setup(
                       "PyMySQL>=1.1.0",
                       "sshtunnel>=0.4.0",
                       "streamlit>=1.32.0",
-                      "streamlit_app>=0.0.2"],
+                      "streamlit_app>=0.0.2",
+                      "pyhive"
+                      "thrift"
+                      "thrift_sasl"],
     license="MIT License",
     packages=find_packages(),
     platforms=["all"],
