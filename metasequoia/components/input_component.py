@@ -7,14 +7,14 @@ from typing import Optional
 import streamlit as st
 
 from metasequoia.components import cache_data
-from metasequoia.components.cache_data import kafka_list_topics
-from metasequoia.connector.kafka_connector import KafkaServer, KafkaTopic
+from metasequoia.components.cache_data import kafka_list_topics, kafka_list_consumer_groups
+from metasequoia.connector.kafka_connector import KafkaServer, KafkaTopic, KafkaGroup
 from metasequoia.connector.rds_connector import RdsInstance, RdsTable
 from metasequoia.connector.ssh_tunnel import SshTunnel
 from streamlit_app import StreamlitPage
 
 __all__ = ["input_rds_name", "input_rds_schema", "input_rds_table_name", "input_rds_instance", "input_rds_table",
-           "input_kafka_servers_name", "input_kafka_server", "input_kafka_topic",
+           "input_kafka_servers_name", "input_kafka_server", "input_kafka_topic", "input_kafka_group",
            "input_ssh_tunnel"]
 
 
@@ -146,6 +146,22 @@ def input_kafka_topic(use_ssh: bool = False) -> Optional[KafkaTopic]:
 
     if kafka_server is not None and topic is not None:
         return KafkaTopic(kafka_server=kafka_server, topic=topic)
+    else:
+        return None
+
+
+def input_kafka_group(use_ssh: bool = False) -> Optional[KafkaGroup]:
+    """【输入】Kafka Group"""
+    kafka_server = input_kafka_server(use_ssh=use_ssh)
+    group_list = kafka_list_consumer_groups(kafka_server) if kafka_server is not None else []
+    group = st.selectbox(label="消费者组",
+                         options=group_list,
+                         placeholder="请选择消费者组",
+                         index=None,
+                         key=StreamlitPage.get_streamlit_default_key())
+
+    if kafka_server is not None and group is not None:
+        return KafkaGroup(kafka_server=kafka_server, group=group)
     else:
         return None
 

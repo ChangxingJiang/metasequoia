@@ -15,7 +15,7 @@ from kafka.admin import KafkaAdminClient
 from metasequoia.connector.base import HostPort
 from metasequoia.connector.ssh_tunnel import SshTunnel
 
-__all__ = ["KafkaServer", "KafkaTopic", "ConnKafkaAdminClient"]
+__all__ = ["KafkaServer", "KafkaTopic", "KafkaGroup", "ConnKafkaAdminClient"]
 
 
 class KafkaServer:
@@ -79,6 +79,30 @@ class KafkaTopic:
         return (isinstance(other, KafkaTopic) and
                 self._kafka_server == other._kafka_server and
                 self._topic == other._topic)
+
+
+class KafkaGroup:
+    """Kafka 消费者组"""
+
+    def __init__(self, kafka_server: "KafkaServer", group: str):
+        self._kafka_server = kafka_server
+        self._group = group
+
+    @property
+    def kafka_server(self) -> "KafkaServer":
+        return self._kafka_server
+
+    @property
+    def group(self) -> str:
+        return self._group
+
+    def __hash__(self):
+        return hash((self._kafka_server, self._group))
+
+    def __eq__(self, other):
+        return (isinstance(other, KafkaGroup) and
+                self._kafka_server == other._kafka_server and
+                self._group == other._group)
 
 
 class ConnKafkaAdminClient:

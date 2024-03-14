@@ -15,7 +15,7 @@ from metasequoia.utils import kafka_util
 from metasequoia.utils import mysql_util
 
 __all__ = ["load_configuration", "show_databases", "show_tables", "show_create_table",
-           "kafka_list_topics", "kafka_get_topic_configs"]
+           "kafka_list_topics", "kafka_list_consumer_groups", "kafka_get_topic_configs"]
 
 
 # ---------- 配置文件函数 ----------
@@ -49,6 +49,11 @@ def show_create_table(rds_instance: RdsInstance, schema: str, table: str, ssh_tu
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={KafkaServer: hash})
 def kafka_list_topics(kafka_server: KafkaServer):
     return kafka_util.list_topics(kafka_server)
+
+
+@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={KafkaServer: hash})
+def kafka_list_consumer_groups(kafka_server: KafkaServer):
+    return kafka_util.list_consumer_groups(kafka_server)
 
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={KafkaTopic: hash})
