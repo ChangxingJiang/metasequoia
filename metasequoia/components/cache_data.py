@@ -10,8 +10,19 @@ import streamlit as st
 from metasequoia.connector.kafka_connector import KafkaServer, KafkaTopic
 from metasequoia.connector.rds_connector import RdsInstance
 from metasequoia.connector.ssh_tunnel import SshTunnel
+from metasequoia.core.config import Configuration, PROPERTIES_PATH
 from metasequoia.utils import kafka_util
 from metasequoia.utils import mysql_util
+
+__all__ = ["load_configuration", "show_databases", "show_tables", "show_create_table",
+           "kafka_list_topics", "kafka_get_topic_configs"]
+
+
+# ---------- 配置文件函数 ----------
+
+@st.cache_resource
+def load_configuration():
+    return Configuration(PROPERTIES_PATH)  # 读取配置信息
 
 
 # ---------- Mysql 工具函数 ----------

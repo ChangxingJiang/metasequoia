@@ -15,7 +15,6 @@ import collections
 from typing import Optional, Union, Type, List, Dict
 
 import streamlit_app
-
 from metasequoia.application.main_page import MainPage
 from metasequoia.application.mode import ApplicationMode
 from metasequoia.core.plugin import PluginBase
@@ -62,6 +61,7 @@ class MetaSequoiaApplication(streamlit_app.Application):
         """初始化主页"""
         print("self._sections:", self._sections)
         main_page_params = {
+            "mode": self.mode.name,
             "application_name": self._application_name,
             "sections": {
                 section_name: [plugin.page_name() for plugin in plugin_list]
@@ -75,13 +75,10 @@ class MetaSequoiaApplication(streamlit_app.Application):
         # 将插件中的页面添加到 Streamlit-app 中
         for plugin_list in self._sections.values():
             for plugin in plugin_list:
-                self.append_page(plugin)
+                self.append_page(plugin, params={"mode": self.mode.name})
 
         # 设置主页
         self.create_main_page()
 
         # 执行部署逻辑
         super().deploy()
-
-
-
