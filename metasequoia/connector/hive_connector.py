@@ -67,8 +67,7 @@ class HiveTable:
 class HiveConn:
     def __init__(self,
                  hive_instance: "HiveInstance",
-                 schema: Optional[str] = None,
-                 ssh_tunnel_info: Optional[SshTunnel] = None) -> None:
+                 schema: Optional[str] = None) -> None:
         """MySQL 连接的构造方法
 
         Parameters
@@ -81,7 +80,6 @@ class HiveConn:
             SSH 隧道的配置，如果为 None 则不需要 SSH 隧道
         """
         self.hive_instance_info = hive_instance  # MySQl 实例的配置
-        self.ssh_tunnel_info = ssh_tunnel_info  # SSH 隧道的配置
         self.schema = schema  # 数据库
 
         # 初始化 Hive 连接和 SSH 隧道连接
@@ -90,10 +88,9 @@ class HiveConn:
 
     @staticmethod
     def create_by_hive_instance(hive_instance: HiveInstance,
-                                schema: Optional[str] = None,
-                                ssh_tunnel_info: Optional[SshTunnel] = None) -> "HiveConn":
+                                schema: Optional[str] = None) -> "HiveConn":
         """根据 HiveInstance 构造"""
-        return HiveConn(hive_instance=hive_instance, schema=schema, ssh_tunnel_info=ssh_tunnel_info)
+        return HiveConn(hive_instance=hive_instance, schema=schema)
 
     def __enter__(self):
         """在进入 with as 语句的时候被 with 调用，返回值作为 as 后面的变量
@@ -103,12 +100,14 @@ class HiveConn:
 
         choose_host = random.choice(self.hive_instance_info.hosts)
 
-        if self.ssh_tunnel_info is not None:
+        ssh_tunnel_info = self.hive_instance_info.ssh_tunnel
+
+        if ssh_tunnel_info is not None:
             # 启动 SSH 隧道
             self.ssh_tunnel = sshtunnel.SSHTunnelForwarder(
-                ssh_address_or_host=(self.ssh_tunnel_info.host, self.ssh_tunnel_info.port),
-                ssh_username=self.ssh_tunnel_info.username,
-                ssh_pkey=self.ssh_tunnel_info.pkey,
+                ssh_address_or_host=(ssh_tunnel_info.host, ssh_tunnel_info.port),
+                ssh_username=ssh_tunnel_info.username,
+                ssh_pkey=ssh_tunnel_info.pkey,
                 remote_bind_address=(choose_host, self.hive_instance_info.port)
             )
             self.ssh_tunnel.start()

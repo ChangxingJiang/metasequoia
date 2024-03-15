@@ -90,9 +90,9 @@ class Configuration:
 
     def get_hive_instance(self, name: str) -> HiveInstance:
         """获取 Hive 列表"""
-        kafka_info = self.get_kafka_info(name)
-        ssh_tunnel = self.get_ssh_tunnel(kafka_info["use_ssh"]) if kafka_info.get("use_ssh") else None
-        return HiveInstance(hosts=kafka_info["hosts"], port=kafka_info["port"],
+        hive_info = self.get_hive_info(name)
+        ssh_tunnel = self.get_ssh_tunnel(hive_info["use_ssh"]) if hive_info.get("use_ssh") else None
+        return HiveInstance(hosts=hive_info["hosts"], port=hive_info["port"],
                             ssh_tunnel=ssh_tunnel)
 
     def _get_section(self, section: str, name: str, mode: str) -> Dict[str, Any]:
