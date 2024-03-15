@@ -16,6 +16,7 @@ from streamlit_app import StreamlitPage
 
 __all__ = ["input_rds_name", "input_rds_schema", "input_rds_table_name", "input_rds_instance", "input_rds_table",
            "input_kafka_servers_name", "input_kafka_server", "input_kafka_topic", "input_kafka_group",
+           "input_hive_instance_name", "input_hive_instance", "input_hive_table",
            "input_ssh_tunnel"]
 
 
