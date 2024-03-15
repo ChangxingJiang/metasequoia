@@ -3,6 +3,6 @@ PyMySQL==1.1.0
 sshtunnel==0.4.0
 streamlit==1.32.0
 streamlit_app==0.0.2
-pyhive
-thrift
-thrift_sasl
+pyhive>=0.7.0
+thrift>=0.16.0
+thrift_sasl>=0.4.3
