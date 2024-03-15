@@ -45,16 +45,21 @@ if __name__ == "__main__":
 
 # 变更历史
 
+#### 0.1.2
+
+- 优化：RDS 输入组件的 SSH 配置实现方法
+- 修复：Hive 连接器的 Bug
+
 #### 0.1.1
 
 - 新增：
-  - Kafka 连接器，streamlit 的 Kafka 输入组件
-  - Hive 连接器，streamlit 的 Hive 输入组件
-- 重构： 
-  - connector 模块，优化连接信息对象
-  - components 模块，将 streamlit 组件从 PluginBase 中拆分出来
+    - Kafka 连接器，streamlit 的 Kafka 输入组件
+    - Hive 连接器，streamlit 的 Hive 输入组件
+- 重构：
+    - connector 模块，优化连接信息对象
+    - components 模块，将 streamlit 组件从 PluginBase 中拆分出来
 - 优化：
-  - get_kafka_topic_info 插件，增加查询 TOPIC 配置功能
-  - 非 DEV 模式默认关闭 SSH 通道
+    - get_kafka_topic_info 插件，增加查询 TOPIC 配置功能
+    - 非 DEV 模式默认关闭 SSH 通道
 
 ##### 0.1.0 初始化
