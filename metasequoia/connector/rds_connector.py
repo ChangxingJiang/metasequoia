@@ -52,6 +52,9 @@ class RdsInstance:
     def set_ssh_tunnel(self, ssh_tunnel: Optional[SshTunnel]):
         self._ssh_tunnel = ssh_tunnel
 
+    def __repr__(self) -> str:
+        return f"<RdsTable host={self.host}, port={self.port}, user={self.user}, passwd={self.passwd}, ssh_tunnel={self.ssh_tunnel}>"
+
 
 class RdsTable:
     """RDS 表"""
@@ -72,6 +75,9 @@ class RdsTable:
     @property
     def table(self) -> str:
         return self._table
+
+    def __repr__(self) -> str:
+        return f"<RdsTable instance={self.instance}, schema={self.schema}, table={self.table}>"
 
 
 class MysqlConn:

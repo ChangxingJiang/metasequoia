@@ -3,7 +3,7 @@
 """
 
 import datetime
-from typing import Optional
+from typing import Optional, List
 
 import streamlit as st
 
@@ -26,6 +26,25 @@ def load_configuration():
 
 
 # ---------- Mysql 工具函数 ----------
+
+@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={RdsInstance: hash, SshTunnel: hash})
+def list_database_and_table(rds_instance: RdsInstance, ignore_schema: List[str] = None):
+    if ignore_schema is not None:
+        ignore_schema_set = set(ignore_schema)
+    else:
+        ignore_schema_set = {"information_schema", "performance_schema", "sys"}
+
+    result = []
+    for schema in show_databases(rds_instance):
+        if schema in ignore_schema_set:
+            continue
+        for table in show_tables(rds_instance, schema=schema):
+            result.append({
+                "schema": schema,
+                "table": table
+            })
+    return result
+
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={RdsInstance: hash, SshTunnel: hash})
 def show_databases(rds_instance: RdsInstance):
