@@ -28,14 +28,13 @@ def load_configuration():
 # ---------- Mysql 工具函数 ----------
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={RdsInstance: hash, SshTunnel: hash})
-def show_databases(rds_instance: RdsInstance, ssh_tunnel: Optional[SshTunnel] = None):
-    return mysql_util.show_databases(rds_instance, ssh_tunnel)
+def show_databases(rds_instance: RdsInstance):
+    return mysql_util.show_databases(rds_instance)
 
 
-@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128,
-               hash_funcs={RdsInstance: hash, SshTunnel: hash, str: hash})
-def show_tables(rds_instance: RdsInstance, schema: str, ssh_tunnel: Optional[SshTunnel] = None):
-    return mysql_util.show_tables(rds_instance, schema, ssh_tunnel)
+@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={RdsInstance: hash, str: hash})
+def show_tables(rds_instance: RdsInstance, schema: str):
+    return mysql_util.show_tables(rds_instance, schema)
 
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128,
