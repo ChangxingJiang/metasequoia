@@ -7,7 +7,7 @@ with open("README.md", "r", encoding="UTF-8") as file:
 
 setup(
     name="metasequoia",
-    version="0.1.0",
+    version="0.1.1",
     description="Metasequoia工具箱",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -19,8 +19,8 @@ setup(
                       "sshtunnel>=0.4.0",
                       "streamlit>=1.32.0",
                       "streamlit_app>=0.0.2",
-                      "pyhive"
-                      "thrift"
+                      "pyhive",
+                      "thrift",
                       "thrift_sasl"],
     license="MIT License",
     packages=find_packages(),
