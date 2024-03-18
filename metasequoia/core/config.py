@@ -36,7 +36,7 @@ class Configuration:
     def get_rds_instance(self, name: str) -> RdsInstance:
         """获取 RdsInstance 对象"""
         rds_info = self.get_rds(name)
-        ssh_tunnel = self.get_ssh_tunnel(rds_info["use_ssh"]) if rds_info["use_ssh"] else None
+        ssh_tunnel = self.get_ssh_tunnel(rds_info["use_ssh"]) if rds_info.get("use_ssh") else None
         return RdsInstance(host=rds_info["host"],
                            port=rds_info["port"],
                            user=rds_info["user"],
