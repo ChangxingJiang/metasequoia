@@ -34,26 +34,28 @@ def input_rds_name() -> str:
                         key=StreamlitPage.get_streamlit_default_key())
 
 
-def input_rds_schema(rds_instance: RdsInstance) -> Optional[str]:
+def input_rds_schema(rds_instance: RdsInstance,
+                     default_schema: Optional[str] = None) -> Optional[str]:
     """【输入】RDS 数据库名"""
     databases = cache_data.show_databases(rds_instance) if rds_instance is not None else []
+    index = databases.index(default_schema) if default_schema is not None and default_schema in databases else None
     return st.selectbox(label="数据库",
                         options=databases,
                         placeholder="请选择数据库",
-                        index=None,
+                        index=index,
                         key=StreamlitPage.get_streamlit_default_key())
 
 
-def input_rds_table_name(rds_instance: RdsInstance, schema: Optional[str]):
+def input_rds_table_name(rds_instance: RdsInstance,
+                         schema: Optional[str],
+                         default_table: Optional[str] = None) -> Optional[str]:
     """【输入】RDS 表名"""
-    if rds_instance is not None and schema is not None:
-        tables = cache_data.show_tables(rds_instance, schema)
-    else:
-        tables = []
+    tables = cache_data.show_tables(rds_instance, schema) if rds_instance is not None and schema is not None else []
+    index = tables.index(default_table) if default_table is not None and default_table in tables else None
     return st.selectbox(label="表",
                         options=tables,
                         placeholder="请选择表",
-                        index=None,
+                        index=index,
                         key=StreamlitPage.get_streamlit_default_key())
 
 
@@ -84,11 +86,13 @@ def input_rds_instance(use_ssh: bool = False) -> Optional[RdsInstance]:
     return None
 
 
-def input_rds_table(use_ssh: bool = False) -> Optional[RdsTable]:
+def input_rds_table(use_ssh: bool = False,
+                    default_schema: Optional[str] = None,
+                    default_table: Optional[str] = None) -> Optional[RdsTable]:
     """【输入】RDS 表"""
     rds_instance = input_rds_instance(use_ssh=use_ssh)
-    rds_schema = input_rds_schema(rds_instance)
-    rds_table_name = input_rds_table_name(rds_instance, rds_schema)
+    rds_schema = input_rds_schema(rds_instance, default_schema=default_schema)
+    rds_table_name = input_rds_table_name(rds_instance, rds_schema, default_table=default_table)
     if rds_instance is not None and rds_schema is not None and rds_table_name is not None:
         rds_table = RdsTable(rds_instance, rds_schema, rds_table_name)
         return rds_table
