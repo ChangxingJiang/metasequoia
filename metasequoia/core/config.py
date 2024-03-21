@@ -2,6 +2,7 @@ import json
 import os
 from typing import Dict, Any, List
 
+from metasequoia.connector.dolphin_meta_connector import DolphinMetaInstance
 from metasequoia.connector.hive_connector import HiveInstance
 from metasequoia.connector.kafka_connector import KafkaServer
 from metasequoia.connector.rds_connector import RdsInstance
@@ -29,6 +30,12 @@ class Configuration:
         with open(self.path, "r", encoding=self.ENCODING) as file:
             self._configuration = json.load(file)
 
+    # ---------- 读取 RDS 相关配置 ----------
+
+    def get_rds_list(self) -> List[str]:
+        """获取 RDS 列表"""
+        return list(self._configuration.get("RDS", {}).keys())
+
     def get_rds(self, name: str, mode: str = MODE) -> Dict[str, Any]:
         """获取 RDS 信息"""
         return self._confirm_params("RDS", self._get_section("RDS", name, mode), ["host", "port", "user"])
@@ -47,9 +54,7 @@ class Configuration:
         """获取 RDS 的名称"""
         return self._configuration["RDS"][name].get("_name", "")
 
-    def get_rds_list(self) -> List[str]:
-        """获取 RDS 列表"""
-        return list(self._configuration["RDS"].keys())
+    # ---------- 读取 SSH 相关配置 ----------
 
     def get_ssh(self, name: str, mode: str = MODE) -> Dict[str, Any]:
         """获取 SSH 信息"""
@@ -67,9 +72,11 @@ class Configuration:
         """获取 SSH 列表"""
         return list(self._configuration["SSH"].keys())
 
+    # ---------- 读取 Kafka 相关配置 ----------
+
     def get_kafka_list(self) -> List[str]:
         """获取 Kafka 列表"""
-        return list(self._configuration["Kafka"].keys())
+        return list(self._configuration.get("Kafka", {}).keys())
 
     def get_kafka_info(self, name: str, mode: str = MODE) -> Dict[str, Any]:
         return self._confirm_params("Kafka", self._get_section("Kafka", name, mode), ["bootstrap_servers"])
@@ -81,9 +88,11 @@ class Configuration:
         return KafkaServer(bootstrap_servers=kafka_info["bootstrap_servers"],
                            ssh_tunnel=ssh_tunnel)
 
+    # ---------- 读取 Hive 相关配置 ----------
+
     def get_hive_list(self) -> List[str]:
         """获取 Hive 列表"""
-        return list(self._configuration["Hive"].keys())
+        return list(self._configuration.get("Hive", {}).keys())
 
     def get_hive_info(self, name: str, mode: str = MODE) -> Dict[str, Any]:
         return self._confirm_params("Hive", self._get_section("Hive", name, mode), ["hosts", "port"])
@@ -95,10 +104,38 @@ class Configuration:
         return HiveInstance(hosts=hive_info["hosts"], port=hive_info["port"],
                             ssh_tunnel=ssh_tunnel)
 
+    # ---------- 读取 DolphinScheduler 相关配置 ----------
+
+    def get_dolphin_meta_list(self) -> List[str]:
+        """获取海豚调度元数据清单"""
+        return list(self._configuration["DolphinMeta"])
+
+    def get_dolphin_meta_info(self, name: str, mode: str = MODE) -> Dict[str, Any]:
+        """获取海豚调度元数据信息"""
+        return self._get_section("DolphinMeta", name, mode)
+
+    def get_dolphin_meta_instance(self, name: str) -> DolphinMetaInstance:
+        """获取海豚调度元数据的 DolphinMetaInstance 对象"""
+        dolphin_meta_info = self.get_dolphin_meta_info(name)
+        ssh_tunnel = self.get_ssh_tunnel(dolphin_meta_info["use_ssh"]) if dolphin_meta_info.get("use_ssh") else None
+        return DolphinMetaInstance(
+            host=dolphin_meta_info["host"],
+            port=dolphin_meta_info["port"],
+            user=dolphin_meta_info["user"],
+            passwd=dolphin_meta_info["passwd"],
+            db=dolphin_meta_info["db"],
+            ssh_tunnel=ssh_tunnel
+        )
+
+    # ---------- 其他工具方法 ----------
+
     def _get_section(self, section: str, name: str, mode: str) -> Dict[str, Any]:
         """获取每种类型的配置信息数据"""
+        if section not in self._configuration or name not in self._configuration[section]:
+            return {}
         config = self._configuration[section][name].get("mode:common", {}).copy()  # 先加载通用配置
         config.update(self._configuration[section][name].get(f"mode:{mode}", {}))  # 然后再加对应模式的配置
+        print(self._configuration[section][name])
         return config
 
     @staticmethod
