@@ -8,25 +8,25 @@ from typing import Optional
 import pymysql
 import pymysql.cursors
 
-from metasequoia.connector.rds_connector import RdsInstance, MysqlConn
+from metasequoia.connector.rds_connector import RdsInstance, MysqlConnector
 from metasequoia.connector.ssh_tunnel import SshTunnel
 
 
 def show_databases(rds_instance: RdsInstance):
     """执行：SHOW DATABASES"""
-    with MysqlConn.create_by_rds_instance(rds_instance=rds_instance) as conn:
+    with MysqlConnector.create_by_rds_instance(rds_instance=rds_instance) as conn:
         return conn_show_databases(conn)
 
 
 def show_tables(rds_instance: RdsInstance, schema: str):
     """执行：SHOW TABLES"""
-    with MysqlConn.create_by_rds_instance(rds_instance=rds_instance, schema=schema) as conn:
+    with MysqlConnector.create_by_rds_instance(rds_instance=rds_instance, schema=schema) as conn:
         return conn_show_tables(conn, schema)
 
 
 def show_create_table(rds_instance: RdsInstance, schema: str, table: str, ssh_tunnel: Optional[SshTunnel] = None):
     """执行：SHOW CREATE TABLE"""
-    with MysqlConn.create_by_rds_instance(rds_instance=rds_instance, schema=schema) as conn:
+    with MysqlConnector.create_by_rds_instance(rds_instance=rds_instance, schema=schema) as conn:
         return conn_show_create_table(conn, table)
 
 
