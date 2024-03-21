@@ -18,8 +18,20 @@ class DolphinMetaInstance(RdsInstance):
     def __repr__(self) -> str:
         return f"<DolphinMetaInstance host={self.host}, port={self.port}, user={self.user}, passwd={self.passwd}, ssh_tunnel={self.ssh_tunnel}, db={self.db}>"
 
+    def __hash__(self):
+        return hash((self.host, self.port, self.user, self.passwd, self.db, self.ssh_tunnel))
 
-class DolphinSchedulerMetaConnector(MysqlConnector):
+    def __eq__(self, other):
+        return (isinstance(other, DolphinMetaInstance) and
+                self.host == other.host and
+                self.port == other.port and
+                self.user == other.user and
+                self.passwd == other.passwd and
+                self.db == other.db and
+                self.ssh_tunnel == other.ssh_tunnel)
+
+
+class DolphinMetaConnector(MysqlConnector):
     """海豚调度元数据连接器"""
 
     def __init__(self, dolphin_scheduler_meta_info: DolphinMetaInstance):
@@ -33,7 +45,7 @@ class DolphinSchedulerMetaConnector(MysqlConnector):
 if __name__ == "__main__":
     from metasequoia.core.config import configuration
 
-    with DolphinSchedulerMetaConnector(configuration.get_dolphin_meta_instance("demo")) as dolphin_conn:
+    with DolphinMetaConnector(configuration.get_dolphin_meta_instance("demo")) as dolphin_conn:
         with dolphin_conn.cursor() as cursor:
             cursor.execute("SHOW TABLES")
             print(cursor.fetchall())

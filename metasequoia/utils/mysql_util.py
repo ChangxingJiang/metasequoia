@@ -2,7 +2,7 @@
 MySQL 相关工具类
 """
 
-import functools
+from typing import Tuple, Dict, Any
 from typing import Optional
 
 import pymysql
@@ -30,7 +30,7 @@ def show_create_table(rds_instance: RdsInstance, schema: str, table: str, ssh_tu
         return conn_show_create_table(conn, table)
 
 
-def conn_select_sql(conn: pymysql.Connection, sql: str):
+def conn_select_sql_as_dict(conn: pymysql.Connection, sql: str) -> Tuple[Dict[str, Any], ...]:
     """通过 MySQL 根据 WHERE 条件抽取数据
 
     Parameters
@@ -52,12 +52,12 @@ def conn_select_sql(conn: pymysql.Connection, sql: str):
 
 def conn_show_databases(conn: pymysql.Connection):
     """执行 SHOW DATABASES 语句"""
-    return [row["Database"] for row in conn_select_sql(conn, "SHOW DATABASES")]
+    return [row["Database"] for row in conn_select_sql_as_dict(conn, "SHOW DATABASES")]
 
 
 def conn_show_tables(conn: pymysql.Connection, schema: str):
     """执行 SHOW TABLES 语句"""
-    return [row[f"Tables_in_{schema}"] for row in conn_select_sql(conn, "SHOW TABLES")]
+    return [row[f"Tables_in_{schema}"] for row in conn_select_sql_as_dict(conn, "SHOW TABLES")]
 
 
 def conn_show_create_table(conn: pymysql.Connection, table: str) -> Optional[str]:
@@ -70,7 +70,7 @@ def conn_show_create_table(conn: pymysql.Connection, table: str) -> Optional[str
     实现说明：
     1. 为使名称完全为数字的表执行正常，所以在表名外添加了引号
     """
-    result = conn_select_sql(conn, f"SHOW CREATE TABLE `{table}`")[0]
+    result = conn_select_sql_as_dict(conn, f"SHOW CREATE TABLE `{table}`")[0]
 
     if "Create Table" in result:
         return result["Create Table"]
