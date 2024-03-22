@@ -63,9 +63,25 @@ def conn_get_tasks_of_processes(conn: pymysql.Connection,
     )
 
 
-def conn_get_task_params_of_need_dependent_task(conn: pymysql.Connection,
-                                                project_code: str,
-                                                task_code_list: List[str]) -> Tuple[Dict[str, Any], ...]:
+def conn_get_downstream_process(conn: pymysql.Connection,
+                                project_code: str,
+                                process_code: str
+                                ) -> Tuple[Dict[str, Any], ...]:
+    """获取海豚工作流的下游工作流"""
+    return mysql_util.conn_select_sql_as_dict(
+        conn, f"SELECT t1.project_code, t1.process_definition_code "
+              f"FROM t_ds_process_task_relation AS t1 "
+              f"INNER JOIN ("
+              f"    SELECT `project_code`, `code` "
+              f"    FROM t_ds_task_definition "
+              f"    WHERE task_type = 'DEPENDENT' AND task_params LIKE '%{project_code}%{process_code}%'"
+              f") AS t2 ON t1.project_code = t2.project_code AND t1.post_task_code = t2.code;"
+    )
+
+
+def conn_get_task_params_of_dependent_task(conn: pymysql.Connection,
+                                           project_code: str,
+                                           task_code_list: List[str]) -> Tuple[Dict[str, Any], ...]:
     """获取海豚指定任务列表中依赖的其他工作流任务的任务参数"""
     task_code_str = ", ".join(f"'{task_code}'" for task_code in task_code_list)
     return mysql_util.conn_select_sql_as_dict(
