@@ -7,10 +7,12 @@ from typing import Optional, List
 
 import streamlit as st
 
+from metasequoia.connector.dolphin_meta_connector import DolphinMetaInstance
 from metasequoia.connector.kafka_connector import KafkaServer, KafkaTopic
 from metasequoia.connector.rds_connector import RdsInstance
 from metasequoia.connector.ssh_tunnel import SshTunnel
 from metasequoia.core.config import Configuration, PROPERTIES_PATH
+from metasequoia.utils import dolphin_util
 from metasequoia.utils import kafka_util
 from metasequoia.utils import mysql_util
 
@@ -77,3 +79,17 @@ def kafka_list_consumer_groups(kafka_server: KafkaServer):
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={KafkaTopic: hash})
 def kafka_get_topic_configs(kafka_topic: KafkaTopic):
     return kafka_util.get_topic_configs(kafka_topic)
+
+
+# ---------- 海豚调度工具函数 ----------
+
+@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128,
+               hash_funcs={DolphinMetaInstance: hash, SshTunnel: hash})
+def dolphin_meta_list_projects(instance: DolphinMetaInstance):
+    return dolphin_util.list_projects(instance)
+
+
+@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128,
+               hash_funcs={DolphinMetaInstance: hash, SshTunnel: hash})
+def dolphin_meta_list_processes(instance: DolphinMetaInstance, project_code: str):
+    return dolphin_util.list_processes(instance, project_code)

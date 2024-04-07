@@ -16,7 +16,7 @@ from metasequoia.connector.ssh_tunnel import SshTunnel
 
 # from metasequoia.core.config import Configuration  # TODO 移除反向引用
 
-__all__ = ["RdsInstance", "RdsTable", "MysqlConn"]
+__all__ = ["RdsInstance", "RdsTable", "MysqlConnector"]
 
 
 class RdsInstance:
@@ -80,11 +80,13 @@ class RdsTable:
         return f"<RdsTable instance={self.instance}, schema={self.schema}, table={self.table}>"
 
 
-class MysqlConn:
+class MysqlConnector:
     def __init__(self,
                  rds_instance: RdsInstance,
                  schema: Optional[str] = None,
-                 ssh_tunnel_info: Optional[SshTunnel] = None) -> None:
+                 ssh_tunnel_info: Optional[SshTunnel] = None,
+                 connect_timeout: int = 5,
+                 read_timeout: int = 10) -> None:
         """MySQL 连接的构造方法
 
         Parameters
@@ -95,26 +97,30 @@ class MysqlConn:
             数据库名称
         ssh_tunnel_info : Optional[SshTunnel], default = None
             SSH 隧道的配置，如果为 None 则不需要 SSH 隧道
+        connect_timeout : int, default = 10
+            连接超时时间
+        read_timeout : int, default = 30
+            读取超时时间
         """
         self.rds_info = rds_instance  # MySQl 实例的配置
         self.ssh_tunnel_info = ssh_tunnel_info  # SSH 隧道的配置
         self.schema = schema  # 数据库
+        self.connect_timeout = connect_timeout
+        self.read_timeout = read_timeout
 
         # 初始化 MySQL 连接和 SSH 隧道连接
         self.mysql_conn = None
         self.ssh_tunnel = None
 
     @staticmethod
-    def create_by_rds_instance(rds_instance: RdsInstance,
-                               schema: Optional[str] = None,
-                               ssh_tunnel_info: Optional[SshTunnel] = None) -> "MysqlConn":
+    def create_by_rds_instance(rds_instance: RdsInstance, schema: Optional[str] = None) -> "MysqlConnector":
         """根据 RdsInstance 构造"""
-        return MysqlConn(rds_instance=rds_instance, schema=schema, ssh_tunnel_info=ssh_tunnel_info)
+        return MysqlConnector(rds_instance=rds_instance, schema=schema, ssh_tunnel_info=rds_instance.ssh_tunnel)
 
     @staticmethod
     # TODO 待移除反向引用
     # def create_by_rds_name(configuration: Configuration, name: str, schema: Optional[str] = None) -> "MysqlConn":
-    def create_by_rds_name(configuration, name: str, schema: Optional[str] = None) -> "MysqlConn":
+    def create_by_rds_name(configuration, name: str, schema: Optional[str] = None) -> "MysqlConnector":
         # 读取 MySQL 实例的配置
         rds_info_conf = configuration.get_rds(name)
         rds_info = RdsInstance(host=rds_info_conf["host"],
@@ -132,7 +138,7 @@ class MysqlConn:
         else:
             ssh_tunnel_info = None
 
-        return MysqlConn(rds_instance=rds_info, ssh_tunnel_info=ssh_tunnel_info, schema=schema)
+        return MysqlConnector(rds_instance=rds_info, schema=schema, ssh_tunnel_info=ssh_tunnel_info)
 
     def __enter__(self):
         """在进入 with as 语句的时候被 with 调用，返回值作为 as 后面的变量"""
@@ -159,7 +165,9 @@ class MysqlConn:
             port=port,
             user=self.rds_info.user,
             passwd=self.rds_info.passwd,
-            db=self.schema
+            db=self.schema,
+            connect_timeout=self.connect_timeout,
+            read_timeout=self.read_timeout
         )
 
         return self.mysql_conn

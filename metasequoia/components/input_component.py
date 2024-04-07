@@ -8,16 +8,24 @@ import streamlit as st
 
 from metasequoia.components import cache_data
 from metasequoia.components.cache_data import kafka_list_topics, kafka_list_consumer_groups
+from metasequoia.connector.dolphin_meta_connector import DolphinMetaInstance
 from metasequoia.connector.hive_connector import HiveInstance, HiveTable
 from metasequoia.connector.kafka_connector import KafkaServer, KafkaTopic, KafkaGroup
 from metasequoia.connector.rds_connector import RdsInstance, RdsTable
 from metasequoia.connector.ssh_tunnel import SshTunnel
 from streamlit_app import StreamlitPage
 
-__all__ = ["input_rds_name", "input_rds_schema", "input_rds_table_name", "input_rds_instance", "input_rds_table",
-           "input_kafka_servers_name", "input_kafka_server", "input_kafka_topic", "input_kafka_group",
-           "input_hive_instance_name", "input_hive_instance", "input_hive_table",
-           "input_ssh_tunnel"]
+__all__ = [
+    "input_rds_name", "input_rds_schema", "input_rds_table_name", "input_rds_instance", "input_rds_table",
+    "input_kafka_servers_name", "input_kafka_server", "input_kafka_topic", "input_kafka_group",
+    "input_hive_instance_name", "input_hive_instance", "input_hive_table",
+    "input_ssh_tunnel",
+    # 海豚调度相关组件
+    "input_dolphin_meta_name",
+    "input_dolphin_meta_instance",
+    "input_dolphin_project",
+    "input_dolphin_process"
+]
 
 
 # ---------- RDS 相关输入组件 ----------
@@ -34,26 +42,28 @@ def input_rds_name() -> str:
                         key=StreamlitPage.get_streamlit_default_key())
 
 
-def input_rds_schema(rds_instance: RdsInstance) -> Optional[str]:
+def input_rds_schema(rds_instance: RdsInstance,
+                     default_schema: Optional[str] = None) -> Optional[str]:
     """【输入】RDS 数据库名"""
     databases = cache_data.show_databases(rds_instance) if rds_instance is not None else []
+    index = databases.index(default_schema) if default_schema is not None and default_schema in databases else None
     return st.selectbox(label="数据库",
                         options=databases,
                         placeholder="请选择数据库",
-                        index=None,
+                        index=index,
                         key=StreamlitPage.get_streamlit_default_key())
 
 
-def input_rds_table_name(rds_instance: RdsInstance, schema: Optional[str]):
+def input_rds_table_name(rds_instance: RdsInstance,
+                         schema: Optional[str],
+                         default_table: Optional[str] = None) -> Optional[str]:
     """【输入】RDS 表名"""
-    if rds_instance is not None and schema is not None:
-        tables = cache_data.show_tables(rds_instance, schema)
-    else:
-        tables = []
+    tables = cache_data.show_tables(rds_instance, schema) if rds_instance is not None and schema is not None else []
+    index = tables.index(default_table) if default_table is not None and default_table in tables else None
     return st.selectbox(label="表",
                         options=tables,
                         placeholder="请选择表",
-                        index=None,
+                        index=index,
                         key=StreamlitPage.get_streamlit_default_key())
 
 
@@ -84,11 +94,13 @@ def input_rds_instance(use_ssh: bool = False) -> Optional[RdsInstance]:
     return None
 
 
-def input_rds_table(use_ssh: bool = False) -> Optional[RdsTable]:
+def input_rds_table(use_ssh: bool = False,
+                    default_schema: Optional[str] = None,
+                    default_table: Optional[str] = None) -> Optional[RdsTable]:
     """【输入】RDS 表"""
     rds_instance = input_rds_instance(use_ssh=use_ssh)
-    rds_schema = input_rds_schema(rds_instance)
-    rds_table_name = input_rds_table_name(rds_instance, rds_schema)
+    rds_schema = input_rds_schema(rds_instance, default_schema=default_schema)
+    rds_table_name = input_rds_table_name(rds_instance, rds_schema, default_table=default_table)
     if rds_instance is not None and rds_schema is not None and rds_table_name is not None:
         rds_table = RdsTable(rds_instance, rds_schema, rds_table_name)
         return rds_table
@@ -232,3 +244,52 @@ def input_ssh_tunnel() -> Optional[SshTunnel]:
         return configuration.get_ssh_tunnel(ssh_tunnel_name)
     else:
         return None
+
+
+# ---------- DolphinScheduler Meta 相关输入组件 ----------
+
+
+def input_dolphin_meta_name() -> str:
+    """【输入】输入内置海豚集群"""
+    configuration = cache_data.load_configuration()
+    return st.selectbox(label="请选择内置海豚集群",
+                        options=configuration.get_dolphin_meta_list(),
+                        placeholder="请选择集群",
+                        index=None,
+                        key=StreamlitPage.get_streamlit_default_key())
+
+
+def input_dolphin_meta_instance() -> Optional[DolphinMetaInstance]:
+    """【输入】输入海豚集群"""
+    dolphin_meta_name = input_dolphin_meta_name()
+    configuration = cache_data.load_configuration()
+    if dolphin_meta_name is not None:
+        return configuration.get_dolphin_meta_instance(dolphin_meta_name)
+    else:
+        return None
+
+
+def input_dolphin_project(dolphin_instance: DolphinMetaInstance) -> Optional[str]:
+    """【输入】RDS 数据库名"""
+    projects = cache_data.dolphin_meta_list_projects(dolphin_instance) if dolphin_instance is not None else []
+    code_name_hash = {project["code"]: project["name"] for project in projects}
+    return st.selectbox(label="项目",
+                        options=list(code_name_hash.keys()),
+                        placeholder="请选择项目",
+                        index=None,
+                        format_func=code_name_hash.get,
+                        key=StreamlitPage.get_streamlit_default_key())
+
+
+def input_dolphin_process(dolphin_instance: DolphinMetaInstance, project_code: str) -> Optional[str]:
+    if dolphin_instance is not None and project_code is not None:
+        processes = cache_data.dolphin_meta_list_processes(dolphin_instance, project_code)
+    else:
+        processes = []
+    code_name_hash = {process["code"]: process["name"] for process in processes}
+    return st.selectbox(label="工作流",
+                        options=list(code_name_hash.keys()),
+                        placeholder="请选择工作流",
+                        index=None,
+                        format_func=code_name_hash.get,
+                        key=StreamlitPage.get_streamlit_default_key())
