@@ -53,7 +53,7 @@ class PluginGetKafkaTopicInfo(PluginBase):
             self.check_is_not_none(kafka_topic, "未输入完整的 Kafka 集群、TOPIC 和消费者组信息")
 
             consumer = KafkaConsumer(group_id=group_id,
-                                     bootstrap_servers=kafka_topic.kafka_server,
+                                     bootstrap_servers=kafka_topic.kafka_server.bootstrap_servers,
                                      api_version=(0, 11))
 
             # 查询并打印每个 TOPIC 的偏移量
