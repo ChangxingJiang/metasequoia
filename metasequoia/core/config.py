@@ -4,7 +4,7 @@ from typing import Dict, Any, List
 
 from metasequoia.connector.dolphin_meta_connector import DolphinMetaInstance
 from metasequoia.connector.hive_connector import HiveInstance
-from metasequoia.connector.kafka_connector import KafkaServer
+from metasequoia_connector.node import KafkaServer
 from metasequoia.connector.rds_connector import RdsInstance
 from metasequoia.connector.ssh_tunnel import SshTunnel
 

@@ -3,46 +3,21 @@
 - SshTunnel
 """
 
+import dataclasses
 from typing import Tuple
 
 __all__ = ["SshTunnel"]
 
 
+@dataclasses.dataclass(slots=True, frozen=True, eq=True)
 class SshTunnel:
     """SSH 隧道"""
 
-    def __init__(self, host: str, port: int, username: str, pkey: str):
-        self._host = host
-        self._port = port
-        self._username = username
-        self._pkey = pkey
-
-    @property
-    def host(self) -> str:
-        return self._host
-
-    @property
-    def port(self) -> int:
-        return self._port
-
-    @property
-    def username(self) -> str:
-        return self._username
-
-    @property
-    def pkey(self) -> str:
-        return self._pkey
+    host: str = dataclasses.field(kw_only=True)
+    port: int = dataclasses.field(kw_only=True)
+    username: str = dataclasses.field(kw_only=True)
+    pkey: str = dataclasses.field(kw_only=True)
 
     @property
     def address(self) -> Tuple[str, int]:
         return self.host, self.port
-
-    def __hash__(self):
-        return hash((self._host, self._port, self._username, self._pkey))
-
-    def __eq__(self, other):
-        return (isinstance(other, SshTunnel) and
-                self._host == other._host and
-                self._port == other._port and
-                self._username == other._username and
-                self._pkey == other._pkey)

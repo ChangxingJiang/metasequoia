@@ -10,7 +10,7 @@ from metasequoia.components import cache_data
 from metasequoia.components.cache_data import kafka_list_topics, kafka_list_consumer_groups
 from metasequoia.connector.dolphin_meta_connector import DolphinMetaInstance
 from metasequoia.connector.hive_connector import HiveInstance, HiveTable
-from metasequoia.connector.kafka_connector import KafkaServer, KafkaTopic, KafkaGroup
+from metasequoia_connector.node import KafkaServer, KafkaTopic, KafkaGroup
 from metasequoia.connector.rds_connector import RdsInstance, RdsTable
 from metasequoia.connector.ssh_tunnel import SshTunnel
 from streamlit_app import StreamlitPage

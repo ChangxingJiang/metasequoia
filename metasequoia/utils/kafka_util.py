@@ -3,7 +3,8 @@ from typing import List, Dict, Any
 from kafka.admin import ConfigResource, ConfigResourceType
 from kafka.protocol.admin import DescribeConfigsResponse_v2
 
-from metasequoia.connector.kafka_connector import KafkaServer, KafkaTopic, KafkaGroup, ConnKafkaAdminClient
+from metasequoia_connector.node import KafkaServer, KafkaTopic, KafkaGroup
+from metasequoia_connector.connector import ConnKafkaAdminClient
 
 
 def list_topics(kafka_server: KafkaServer) -> List[str]:

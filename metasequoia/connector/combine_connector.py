@@ -2,7 +2,7 @@
 组合的连接对象
 """
 
-from metasequoia.connector.kafka_connector import KafkaTopic
+from metasequoia_connector.node import KafkaTopic
 from metasequoia.connector.rds_connector import RdsTable
 
 

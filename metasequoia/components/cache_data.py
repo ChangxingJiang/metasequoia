@@ -8,7 +8,7 @@ from typing import Optional, List
 import streamlit as st
 
 from metasequoia.connector.dolphin_meta_connector import DolphinMetaInstance
-from metasequoia.connector.kafka_connector import KafkaServer, KafkaTopic
+from metasequoia_connector.node import KafkaServer, KafkaTopic
 from metasequoia.connector.rds_connector import RdsInstance
 from metasequoia.connector.ssh_tunnel import SshTunnel
 from metasequoia.core.config import Configuration, PROPERTIES_PATH
