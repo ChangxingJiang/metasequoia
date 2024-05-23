@@ -142,7 +142,7 @@ def input_kafka_server(use_ssh: bool = False) -> Optional[KafkaServer]:
         else:
             ssh_tunnel = None
         if bootstrap_servers is not None:
-            return KafkaServer(bootstrap_servers.split(","), ssh_tunnel=ssh_tunnel)
+            return KafkaServer(bootstrap_servers=bootstrap_servers.split(","), ssh_tunnel=ssh_tunnel)
     return None
 
 
