@@ -8,11 +8,9 @@ import streamlit as st
 
 from metasequoia.components import cache_data
 from metasequoia.components.cache_data import kafka_list_topics, kafka_list_consumer_groups
-from metasequoia.connector.dolphin_meta_connector import DolphinMetaInstance
 from metasequoia.connector.hive_connector import HiveInstance, HiveTable
-from metasequoia_connector.node import KafkaServer, KafkaTopic, KafkaGroup
-from metasequoia.connector.rds_connector import RdsInstance, RdsTable
-from metasequoia.connector.ssh_tunnel import SshTunnel
+from metasequoia_connector.node import (KafkaServer, KafkaTopic, KafkaGroup, DSMetaInstance, SshTunnel, MysqlInstance,
+                                        MysqlTable)
 from streamlit_app import StreamlitPage
 
 __all__ = [
@@ -42,7 +40,7 @@ def input_rds_name() -> str:
                         key=StreamlitPage.get_streamlit_default_key())
 
 
-def input_rds_schema(rds_instance: RdsInstance,
+def input_rds_schema(rds_instance: MysqlInstance,
                      default_schema: Optional[str] = None) -> Optional[str]:
     """【输入】RDS 数据库名"""
     databases = cache_data.show_databases(rds_instance) if rds_instance is not None else []
@@ -54,7 +52,7 @@ def input_rds_schema(rds_instance: RdsInstance,
                         key=StreamlitPage.get_streamlit_default_key())
 
 
-def input_rds_table_name(rds_instance: RdsInstance,
+def input_rds_table_name(rds_instance: MysqlInstance,
                          schema: Optional[str],
                          default_table: Optional[str] = None) -> Optional[str]:
     """【输入】RDS 表名"""
@@ -67,7 +65,7 @@ def input_rds_table_name(rds_instance: RdsInstance,
                         key=StreamlitPage.get_streamlit_default_key())
 
 
-def input_rds_instance(use_ssh: bool = False) -> Optional[RdsInstance]:
+def input_rds_instance(use_ssh: bool = False) -> Optional[MysqlInstance]:
     """【输入】RDS 实例"""
     configuration = cache_data.load_configuration()
     mode = st.radio(label="是否使用内置RDS实例",
@@ -90,19 +88,19 @@ def input_rds_instance(use_ssh: bool = False) -> Optional[RdsInstance]:
         else:
             ssh_tunnel = None
         if host is not None and port is not None and user is not None and passwd is not None:
-            return RdsInstance(host=host, port=port, user=user, passwd=passwd, ssh_tunnel=ssh_tunnel)
+            return MysqlInstance(host=host, port=port, user=user, passwd=passwd, ssh_tunnel=ssh_tunnel)
     return None
 
 
 def input_rds_table(use_ssh: bool = False,
                     default_schema: Optional[str] = None,
-                    default_table: Optional[str] = None) -> Optional[RdsTable]:
+                    default_table: Optional[str] = None) -> Optional[MysqlTable]:
     """【输入】RDS 表"""
     rds_instance = input_rds_instance(use_ssh=use_ssh)
     rds_schema = input_rds_schema(rds_instance, default_schema=default_schema)
     rds_table_name = input_rds_table_name(rds_instance, rds_schema, default_table=default_table)
     if rds_instance is not None and rds_schema is not None and rds_table_name is not None:
-        rds_table = RdsTable(rds_instance, rds_schema, rds_table_name)
+        rds_table = MysqlTable(rds_instance, rds_schema, rds_table_name)
         return rds_table
     else:
         return None
@@ -259,7 +257,7 @@ def input_dolphin_meta_name() -> str:
                         key=StreamlitPage.get_streamlit_default_key())
 
 
-def input_dolphin_meta_instance() -> Optional[DolphinMetaInstance]:
+def input_dolphin_meta_instance() -> Optional[DSMetaInstance]:
     """【输入】输入海豚集群"""
     dolphin_meta_name = input_dolphin_meta_name()
     configuration = cache_data.load_configuration()
@@ -269,7 +267,7 @@ def input_dolphin_meta_instance() -> Optional[DolphinMetaInstance]:
         return None
 
 
-def input_dolphin_project(dolphin_instance: DolphinMetaInstance) -> Optional[str]:
+def input_dolphin_project(dolphin_instance: DSMetaInstance) -> Optional[str]:
     """【输入】RDS 数据库名"""
     projects = cache_data.dolphin_meta_list_projects(dolphin_instance) if dolphin_instance is not None else []
     code_name_hash = {project["code"]: project["name"] for project in projects}
@@ -281,7 +279,7 @@ def input_dolphin_project(dolphin_instance: DolphinMetaInstance) -> Optional[str
                         key=StreamlitPage.get_streamlit_default_key())
 
 
-def input_dolphin_process(dolphin_instance: DolphinMetaInstance, project_code: str) -> Optional[str]:
+def input_dolphin_process(dolphin_instance: DSMetaInstance, project_code: str) -> Optional[str]:
     if dolphin_instance is not None and project_code is not None:
         processes = cache_data.dolphin_meta_list_processes(dolphin_instance, project_code)
     else:

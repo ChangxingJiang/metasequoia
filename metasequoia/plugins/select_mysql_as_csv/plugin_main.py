@@ -7,9 +7,10 @@ from typing import Optional
 import streamlit as st
 
 from metasequoia.components.input_component import input_rds_instance, input_rds_schema
-from metasequoia.connector.rds_connector import RdsInstance, MysqlConnector
+from metasequoia_connector.connector import MysqlConnector
 from metasequoia.core import PluginBase
 from metasequoia.utils.mysql_util import conn_select_sql_as_dict
+from metasequoia_connector.node import MysqlInstance
 
 
 class PluginSelectMysqlAsCsv(PluginBase):
@@ -35,7 +36,7 @@ class PluginSelectMysqlAsCsv(PluginBase):
         )
 
     @staticmethod
-    def download_data_build_csv(rds_instance: Optional[RdsInstance],
+    def download_data_build_csv(rds_instance: Optional[MysqlInstance],
                                 rds_schema: Optional[str],
                                 select_sql: Optional[str]):
         if rds_instance is None:

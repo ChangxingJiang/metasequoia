@@ -2,11 +2,8 @@ import json
 import os
 from typing import Dict, Any, List
 
-from metasequoia.connector.dolphin_meta_connector import DolphinMetaInstance
 from metasequoia.connector.hive_connector import HiveInstance
-from metasequoia_connector.node import KafkaServer
-from metasequoia.connector.rds_connector import RdsInstance
-from metasequoia.connector.ssh_tunnel import SshTunnel
+from metasequoia_connector.node import KafkaServer, DSMetaInstance, SshTunnel, MysqlInstance
 
 __all__ = ["configuration", "Configuration", "MODE"]
 
@@ -40,15 +37,15 @@ class Configuration:
         """获取 RDS 信息"""
         return self._confirm_params("RDS", self._get_section("RDS", name, mode), ["host", "port", "user"])
 
-    def get_rds_instance(self, name: str) -> RdsInstance:
+    def get_rds_instance(self, name: str) -> MysqlInstance:
         """获取 RdsInstance 对象"""
         rds_info = self.get_rds(name)
         ssh_tunnel = self.get_ssh_tunnel(rds_info["use_ssh"]) if rds_info.get("use_ssh") else None
-        return RdsInstance(host=rds_info["host"],
-                           port=rds_info["port"],
-                           user=rds_info["user"],
-                           passwd=rds_info["passwd"],
-                           ssh_tunnel=ssh_tunnel)
+        return MysqlInstance(host=rds_info["host"],
+                             port=rds_info["port"],
+                             user=rds_info["user"],
+                             passwd=rds_info["passwd"],
+                             ssh_tunnel=ssh_tunnel)
 
     def get_rds_name(self, name: str) -> str:
         """获取 RDS 的名称"""
@@ -114,11 +111,11 @@ class Configuration:
         """获取海豚调度元数据信息"""
         return self._get_section("DolphinMeta", name, mode)
 
-    def get_dolphin_meta_instance(self, name: str) -> DolphinMetaInstance:
+    def get_dolphin_meta_instance(self, name: str) -> DSMetaInstance:
         """获取海豚调度元数据的 DolphinMetaInstance 对象"""
         dolphin_meta_info = self.get_dolphin_meta_info(name)
         ssh_tunnel = self.get_ssh_tunnel(dolphin_meta_info["use_ssh"]) if dolphin_meta_info.get("use_ssh") else None
-        return DolphinMetaInstance(
+        return DSMetaInstance(
             host=dolphin_meta_info["host"],
             port=dolphin_meta_info["port"],
             user=dolphin_meta_info["user"],

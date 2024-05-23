@@ -8,7 +8,7 @@ from typing import List, Optional
 import sshtunnel
 from pyhive import hive
 
-from metasequoia.connector.ssh_tunnel import SshTunnel
+from metasequoia_connector.node import SshTunnel
 
 __all__ = ["HiveInstance", "HiveTable", "HiveConn"]
 

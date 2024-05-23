@@ -7,10 +7,7 @@ from typing import Optional, List
 
 import streamlit as st
 
-from metasequoia.connector.dolphin_meta_connector import DolphinMetaInstance
-from metasequoia_connector.node import KafkaServer, KafkaTopic
-from metasequoia.connector.rds_connector import RdsInstance
-from metasequoia.connector.ssh_tunnel import SshTunnel
+from metasequoia_connector.node import KafkaServer, KafkaTopic, DSMetaInstance, SshTunnel, MysqlInstance
 from metasequoia.core.config import Configuration, PROPERTIES_PATH
 from metasequoia.utils import dolphin_util
 from metasequoia.utils import kafka_util
@@ -29,8 +26,8 @@ def load_configuration():
 
 # ---------- Mysql 工具函数 ----------
 
-@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={RdsInstance: hash, SshTunnel: hash})
-def list_database_and_table(rds_instance: RdsInstance, ignore_schema: List[str] = None):
+@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={MysqlInstance: hash, SshTunnel: hash})
+def list_database_and_table(rds_instance: MysqlInstance, ignore_schema: List[str] = None):
     if ignore_schema is not None:
         ignore_schema_set = set(ignore_schema)
     else:
@@ -48,19 +45,19 @@ def list_database_and_table(rds_instance: RdsInstance, ignore_schema: List[str] 
     return result
 
 
-@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={RdsInstance: hash, SshTunnel: hash})
-def show_databases(rds_instance: RdsInstance):
+@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={MysqlInstance: hash, SshTunnel: hash})
+def show_databases(rds_instance: MysqlInstance):
     return mysql_util.show_databases(rds_instance)
 
 
-@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={RdsInstance: hash, str: hash})
-def show_tables(rds_instance: RdsInstance, schema: str):
+@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={MysqlInstance: hash, str: hash})
+def show_tables(rds_instance: MysqlInstance, schema: str):
     return mysql_util.show_tables(rds_instance, schema)
 
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128,
-               hash_funcs={RdsInstance: hash, SshTunnel: hash, str: hash})
-def show_create_table(rds_instance: RdsInstance, schema: str, table: str, ssh_tunnel: Optional[SshTunnel] = None):
+               hash_funcs={MysqlInstance: hash, SshTunnel: hash, str: hash})
+def show_create_table(rds_instance: MysqlInstance, schema: str, table: str, ssh_tunnel: Optional[SshTunnel] = None):
     return mysql_util.show_create_table(rds_instance, schema, table, ssh_tunnel)
 
 
@@ -84,12 +81,12 @@ def kafka_get_topic_configs(kafka_topic: KafkaTopic):
 # ---------- 海豚调度工具函数 ----------
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128,
-               hash_funcs={DolphinMetaInstance: hash, SshTunnel: hash})
-def dolphin_meta_list_projects(instance: DolphinMetaInstance):
+               hash_funcs={DSMetaInstance: hash, SshTunnel: hash})
+def dolphin_meta_list_projects(instance: DSMetaInstance):
     return dolphin_util.list_projects(instance)
 
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128,
-               hash_funcs={DolphinMetaInstance: hash, SshTunnel: hash})
-def dolphin_meta_list_processes(instance: DolphinMetaInstance, project_code: str):
+               hash_funcs={DSMetaInstance: hash, SshTunnel: hash})
+def dolphin_meta_list_processes(instance: DSMetaInstance, project_code: str):
     return dolphin_util.list_processes(instance, project_code)

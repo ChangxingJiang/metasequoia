@@ -8,17 +8,18 @@ from typing import List, Dict, Any, Tuple
 
 import pymysql
 
-from metasequoia.connector.dolphin_meta_connector import DolphinMetaInstance, DolphinMetaConnector
+from metasequoia_connector.node.ds_meta import DSMetaInstance
+from metasequoia.connector.dolphin_meta_connector import DolphinMetaConnector
 from metasequoia.utils import mysql_util
 
 
-def list_projects(instance: DolphinMetaInstance) -> Tuple[Dict[str, Any], ...]:
+def list_projects(instance: DSMetaInstance) -> Tuple[Dict[str, Any], ...]:
     """获取海豚调度的项目列表"""
     with DolphinMetaConnector(instance) as conn:
         return conn_list_projects(conn)
 
 
-def list_processes(instance: DolphinMetaInstance, project_code: str) -> Tuple[Dict[str, Any], ...]:
+def list_processes(instance: DSMetaInstance, project_code: str) -> Tuple[Dict[str, Any], ...]:
     """获取海豚调度指定项目的工作流列表"""
     with DolphinMetaConnector(instance) as conn:
         return conn_list_processes(conn, project_code)
