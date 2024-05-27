@@ -2,8 +2,7 @@ import json
 import os
 from typing import Dict, Any, List
 
-from metasequoia.connector.hive_connector import HiveInstance
-from metasequoia_connector.node import KafkaServer, DSMetaInstance, SshTunnel, MysqlInstance
+from metasequoia_connector.node import KafkaServer, DSMetaInstance, SshTunnel, MysqlInstance, HiveInstance
 
 __all__ = ["configuration", "Configuration", "MODE"]
 

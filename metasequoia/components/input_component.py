@@ -8,9 +8,8 @@ import streamlit as st
 
 from metasequoia.components import cache_data
 from metasequoia.components.cache_data import kafka_list_topics, kafka_list_consumer_groups
-from metasequoia.connector.hive_connector import HiveInstance, HiveTable
 from metasequoia_connector.node import (KafkaServer, KafkaTopic, KafkaGroup, DSMetaInstance, SshTunnel, MysqlInstance,
-                                        MysqlTable)
+                                        MysqlTable, HiveInstance, HiveTable)
 from streamlit_app import StreamlitPage
 
 __all__ = [
