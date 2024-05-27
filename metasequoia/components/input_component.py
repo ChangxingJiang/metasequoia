@@ -99,7 +99,7 @@ def input_rds_table(use_ssh: bool = False,
     rds_schema = input_rds_schema(rds_instance, default_schema=default_schema)
     rds_table_name = input_rds_table_name(rds_instance, rds_schema, default_table=default_table)
     if rds_instance is not None and rds_schema is not None and rds_table_name is not None:
-        rds_table = MysqlTable(rds_instance, rds_schema, rds_table_name)
+        rds_table = MysqlTable(instance=rds_instance, schema=rds_schema, table=rds_table_name)
         return rds_table
     else:
         return None
@@ -221,7 +221,7 @@ def input_hive_table(use_ssh: bool = False) -> Optional[HiveTable]:
     hive_schema = st.text_input(label="schema", value=None)
     hive_table_name = st.text_input(label="table", value=None)
     if hive_instance is not None and hive_schema is not None and hive_table_name is not None:
-        hive_table = HiveTable(hive_instance, hive_schema, hive_table_name)
+        hive_table = HiveTable(instance=hive_instance, schema=hive_schema, table=hive_table_name)
         return hive_table
     else:
         return None
