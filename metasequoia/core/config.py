@@ -135,7 +135,7 @@ class Configuration:
 
     def get_ots_instance(self, name: str) -> OTSInstance:
         """获取 OTS 元数据的 OTSInstance 对象"""
-        ots_info = self.get_dolphin_meta_info(name)
+        ots_info = self.get_ots_info(name)
         return OTSInstance(
             end_point=ots_info["end_point"],
             access_key_id=ots_info["access_key_id"],
