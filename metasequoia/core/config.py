@@ -50,6 +50,14 @@ class Configuration:
         """获取 RDS 的名称"""
         return self._configuration["RDS"][name].get("_name", "")
 
+    def get_rds_type(self, name: str) -> str:
+        """获取 RDS 的类型"""
+        return self._configuration["RDS"][name].get("_type", "")
+
+    def get_rds_type_list(self):
+        """获取 RDS 的所有类型"""
+        return {self.get_rds_type(rds_name) for rds_name in self.get_rds_list()}
+
     # ---------- 读取 SSH 相关配置 ----------
 
     def get_ssh(self, name: str, mode: str = MODE) -> Dict[str, Any]:
