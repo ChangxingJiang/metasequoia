@@ -159,7 +159,6 @@ class Configuration:
             return {}
         config = self._configuration[section][name].get("mode:common", {}).copy()  # 先加载通用配置
         config.update(self._configuration[section][name].get(f"mode:{mode}", {}))  # 然后再加对应模式的配置
-        print(self._configuration[section][name])
         return config
 
     @staticmethod
