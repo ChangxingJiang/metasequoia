@@ -9,7 +9,7 @@ import streamlit as st
 from metasequoia.components import cache_data
 from metasequoia.components.cache_data import kafka_list_topics, kafka_list_consumer_groups
 from metasequoia_connector.node import (KafkaServer, KafkaTopic, KafkaGroup, DSMetaInstance, SshTunnel, MysqlInstance,
-                                        MysqlTable, HiveInstance, HiveTable, OTSInstance)
+                                        MysqlTable, HiveInstance, HiveTable)
 from streamlit_app import StreamlitPage
 
 __all__ = [
@@ -22,10 +22,6 @@ __all__ = [
     "input_dolphin_meta_instance",
     "input_dolphin_project",
     "input_dolphin_process",
-
-    # OTS 相关组件
-    "input_ots_instance_name",
-    "input_ots_instance"
 ]
 
 
@@ -294,23 +290,3 @@ def input_dolphin_process(dolphin_instance: DSMetaInstance, project_code: str) -
                         index=None,
                         format_func=code_name_hash.get,
                         key=StreamlitPage.get_streamlit_default_key())
-
-
-# ---------- OTS 相关输入组件 ----------
-def input_ots_instance_name():
-    configuration = cache_data.load_configuration()
-    return st.selectbox(label="请选择内置OTS实例",
-                        options=configuration.get_ots_list(),
-                        placeholder="请选择实例",
-                        index=None,
-                        key=StreamlitPage.get_streamlit_default_key())
-
-
-def input_ots_instance() -> Optional[OTSInstance]:
-    """【输入】输入 OTS 实例"""
-    ots_instance_name = input_ots_instance_name()
-    configuration = cache_data.load_configuration()
-    if ots_instance_name is not None:
-        return configuration.get_ots_instance(ots_instance_name)
-    else:
-        return None
