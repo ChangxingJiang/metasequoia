@@ -4,7 +4,7 @@ from typing import Dict, Any, List
 
 from metasequoia_connector.node import KafkaServer, DSMetaInstance, SshTunnel, MysqlInstance, HiveInstance, OTSInstance
 
-__all__ = ["configuration", "Configuration", "MODE"]
+__all__ = ["Configuration", "MODE"]
 
 PROPERTIES_PATH = os.environ.get("PINALE_CONFIG_PATH")
 MODE = "dev"
@@ -14,13 +14,25 @@ MODE = "dev"
 
 
 class Configuration:
-    ENCODING = "UTF-8"  # 默认编码格式
+    ENCODING = "UTF-8"  # 编码格式
 
     def __init__(self, path: str):
         """配置文件路径"""
         self.path = path
         self._configuration = None
         self.load()
+
+    @classmethod
+    def from_environment(cls, environ_name: str):
+        """从环境变量中读取配置文件路径，并加载配置文件
+
+        Parameters
+        ----------
+        environ_name : str
+            环境变量名称
+        """
+        config_path = os.environ.get(environ_name)
+        return Configuration(config_path)  # 实现配置信息的单例
 
     def load(self):
         with open(self.path, "r", encoding=self.ENCODING) as file:
@@ -178,6 +190,3 @@ class Configuration:
                 {"RDS": {"localhost": {"host": "localhost", "port": 3306, "user": "root", "passwd": "123456"}},
                  "SSH": {"demo": {"host": "...", "port": "...", "username": "...", "pkey": "..."}}}))
             print("配置文件模板生成完成")
-
-
-configuration = Configuration(PROPERTIES_PATH)  # 实现配置信息的单例
