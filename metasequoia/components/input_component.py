@@ -18,7 +18,6 @@ __all__ = [
     "input_hive_instance_name", "input_hive_instance", "input_hive_table",
     "input_ssh_tunnel",
     # 海豚调度相关组件
-    "input_dolphin_meta_name",
     "input_dolphin_meta_instance",
     "input_dolphin_project",
     "input_dolphin_process",

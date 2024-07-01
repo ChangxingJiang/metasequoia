@@ -18,7 +18,6 @@ setup(
                       "PyMySQL>=1.1.0",
                       "sshtunnel>=0.4.0",
                       "streamlit>=1.32.0",
-                      "streamlit_app>=0.0.3",
                       "pyhive",
                       "thrift",
                       "thrift_sasl"],
