@@ -3,7 +3,6 @@
 """
 
 import datetime
-import os
 from typing import Optional, List
 
 import streamlit as st
@@ -20,9 +19,9 @@ __all__ = ["load_configuration", "show_databases", "show_tables", "show_create_t
 
 # ---------- 配置文件函数 ----------
 
-@st.cache_resource
+@st.cache_data(ttl=300)
 def load_configuration():
-    return Configuration(os.environ.get("PINALE_CONFIG_PATH"))  # 读取配置信息
+    return Configuration.from_environment()  # 读取配置信息
 
 
 # ---------- Mysql 工具函数 ----------
