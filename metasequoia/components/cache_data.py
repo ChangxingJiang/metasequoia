@@ -3,15 +3,16 @@
 """
 
 import datetime
+import os
 from typing import Optional, List
 
 import streamlit as st
 
-from metasequoia_connector.node import KafkaServer, KafkaTopic, DSMetaInstance, SshTunnel, MysqlInstance
-from metasequoia.core.config import Configuration, PROPERTIES_PATH
 from metasequoia.utils import dolphin_util
 from metasequoia.utils import kafka_util
 from metasequoia.utils import mysql_util
+from metasequoia_connector.config import Configuration
+from metasequoia_connector.node import KafkaServer, KafkaTopic, DSMetaInstance, SshTunnel, MysqlInstance
 
 __all__ = ["load_configuration", "show_databases", "show_tables", "show_create_table",
            "kafka_list_topics", "kafka_list_consumer_groups", "kafka_get_topic_configs"]
@@ -21,7 +22,7 @@ __all__ = ["load_configuration", "show_databases", "show_tables", "show_create_t
 
 @st.cache_resource
 def load_configuration():
-    return Configuration(PROPERTIES_PATH)  # 读取配置信息
+    return Configuration(os.environ.get("PINALE_CONFIG_PATH"))  # 读取配置信息
 
 
 # ---------- Mysql 工具函数 ----------

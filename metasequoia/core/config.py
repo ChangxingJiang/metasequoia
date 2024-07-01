@@ -6,7 +6,6 @@ from metasequoia_connector.node import KafkaServer, DSMetaInstance, SshTunnel, M
 
 __all__ = ["Configuration", "MODE"]
 
-PROPERTIES_PATH = os.environ.get("PINALE_CONFIG_PATH")
 MODE = "dev"
 
 
@@ -35,6 +34,7 @@ class Configuration:
         return Configuration(config_path)  # 实现配置信息的单例
 
     def load(self):
+        """从配置文件中读取配置信息"""
         with open(self.path, "r", encoding=self.ENCODING) as file:
             self._configuration = json.load(file)
 
