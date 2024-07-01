@@ -4,7 +4,7 @@ from typing import Dict, Any, List
 
 from metasequoia_connector.node import KafkaServer, DSMetaInstance, SshTunnel, MysqlInstance, HiveInstance, OTSInstance
 
-__all__ = ["Configuration", "MODE"]
+__all__ = ["MODE"]
 
 MODE = "dev"
 
