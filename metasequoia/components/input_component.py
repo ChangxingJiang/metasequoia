@@ -10,7 +10,7 @@ from metasequoia.components import cache_data
 from metasequoia.components.cache_data import kafka_list_topics, kafka_list_consumer_groups
 from metasequoia_connector.node import (KafkaServer, KafkaTopic, KafkaGroup, DSMetaInstance, SshTunnel, MysqlInstance,
                                         MysqlTable, HiveInstance, HiveTable)
-from metasequoia_st_components.common import get_streamlit_default_key
+from metasequoia_streamlit.common import get_streamlit_default_key
 
 __all__ = [
     "input_rds_name", "input_rds_schema", "input_rds_table_name", "input_rds_instance", "input_rds_table",
