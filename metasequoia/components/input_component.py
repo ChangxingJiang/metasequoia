@@ -10,7 +10,7 @@ from metasequoia.components import cache_data
 from metasequoia.components.cache_data import kafka_list_topics, kafka_list_consumer_groups
 from metasequoia_connector.node import (KafkaServer, KafkaTopic, KafkaGroup, DSMetaInstance, SshTunnel, MysqlInstance,
                                         MysqlTable, HiveInstance, HiveTable)
-from streamlit_app import StreamlitPage
+from metasequoia_st_components.common import get_streamlit_default_key
 
 __all__ = [
     "input_rds_name", "input_rds_schema", "input_rds_table_name", "input_rds_instance", "input_rds_table",
@@ -36,7 +36,7 @@ def input_rds_name() -> str:
                         placeholder="请选择实例",
                         index=None,
                         format_func=configuration.get_rds_name,
-                        key=StreamlitPage.get_streamlit_default_key())
+                        key=get_streamlit_default_key())
 
 
 def input_rds_schema(rds_instance: MysqlInstance,
@@ -48,7 +48,7 @@ def input_rds_schema(rds_instance: MysqlInstance,
                         options=databases,
                         placeholder="请选择数据库",
                         index=index,
-                        key=StreamlitPage.get_streamlit_default_key())
+                        key=get_streamlit_default_key())
 
 
 def input_rds_table_name(rds_instance: MysqlInstance,
@@ -61,7 +61,7 @@ def input_rds_table_name(rds_instance: MysqlInstance,
                         options=tables,
                         placeholder="请选择表",
                         index=index,
-                        key=StreamlitPage.get_streamlit_default_key())
+                        key=get_streamlit_default_key())
 
 
 def input_rds_instance(use_ssh: bool = False) -> Optional[MysqlInstance]:
@@ -70,7 +70,7 @@ def input_rds_instance(use_ssh: bool = False) -> Optional[MysqlInstance]:
     mode = st.radio(label="是否使用内置RDS实例",
                     options=["使用内置RDS实例", "自定义RDS实例"],
                     index=0,
-                    key=StreamlitPage.get_streamlit_default_key())
+                    key=get_streamlit_default_key())
     if mode == "使用内置RDS实例":
         # 使用内置 RDS 实例
         name = input_rds_name()
@@ -115,7 +115,7 @@ def input_kafka_servers_name() -> str:
                         options=configuration.get_kafka_list(),
                         placeholder="请选择集群",
                         index=None,
-                        key=StreamlitPage.get_streamlit_default_key())
+                        key=get_streamlit_default_key())
 
 
 def input_kafka_server(use_ssh: bool = False) -> Optional[KafkaServer]:
@@ -124,7 +124,7 @@ def input_kafka_server(use_ssh: bool = False) -> Optional[KafkaServer]:
     mode = st.radio(label="是否使用内置Kafka集群",
                     options=["使用内置Kafka集群", "使用自定义Kafka集群"],
                     index=0,
-                    key=StreamlitPage.get_streamlit_default_key())
+                    key=get_streamlit_default_key())
     if mode == "使用内置Kafka集群":
         # 使用内置 RDS 实例
         name = input_kafka_servers_name()
@@ -151,7 +151,7 @@ def input_kafka_topic(use_ssh: bool = False) -> Optional[KafkaTopic]:
                          options=topic_list,
                          placeholder="请选择TOPIC",
                          index=None,
-                         key=StreamlitPage.get_streamlit_default_key())
+                         key=get_streamlit_default_key())
 
     if kafka_server is not None and topic is not None:
         return KafkaTopic(kafka_server=kafka_server, topic=topic)
@@ -167,7 +167,7 @@ def input_kafka_group(use_ssh: bool = False) -> Optional[KafkaGroup]:
                          options=group_list,
                          placeholder="请选择消费者组",
                          index=None,
-                         key=StreamlitPage.get_streamlit_default_key())
+                         key=get_streamlit_default_key())
 
     if kafka_server is not None and group is not None:
         return KafkaGroup(kafka_server=kafka_server, group=group)
@@ -185,7 +185,7 @@ def input_hive_instance_name() -> str:
                         options=configuration.get_hive_list(),
                         placeholder="请选择集群",
                         index=None,
-                        key=StreamlitPage.get_streamlit_default_key())
+                        key=get_streamlit_default_key())
 
 
 def input_hive_instance(use_ssh: bool = False) -> Optional[HiveInstance]:
@@ -194,7 +194,7 @@ def input_hive_instance(use_ssh: bool = False) -> Optional[HiveInstance]:
     mode = st.radio(label="是否使用内置Hive集群",
                     options=["使用内置Hive集群", "使用自定义Hive集群"],
                     index=0,
-                    key=StreamlitPage.get_streamlit_default_key())
+                    key=get_streamlit_default_key())
     if mode == "使用内置Hive集群":
         name = input_hive_instance_name()
         username = st.text_input(label="username", value=None)
@@ -236,7 +236,7 @@ def input_ssh_tunnel() -> Optional[SshTunnel]:
     ssh_tunnel_name = st.selectbox(label="请选择SSH隧道",
                                    options=["不使用SSH隧道"] + configuration.get_ssh_list(),
                                    index=0,
-                                   key=StreamlitPage.get_streamlit_default_key())
+                                   key=get_streamlit_default_key())
     if ssh_tunnel_name != "不使用SSH隧道":
         return configuration.get_ssh_tunnel(ssh_tunnel_name)
     else:
@@ -253,7 +253,7 @@ def input_dolphin_meta_name() -> str:
                         options=configuration.get_dolphin_meta_list(),
                         placeholder="请选择集群",
                         index=None,
-                        key=StreamlitPage.get_streamlit_default_key())
+                        key=get_streamlit_default_key())
 
 
 def input_dolphin_meta_instance() -> Optional[DSMetaInstance]:
@@ -275,7 +275,7 @@ def input_dolphin_project(dolphin_instance: DSMetaInstance) -> Optional[str]:
                         placeholder="请选择项目",
                         index=None,
                         format_func=code_name_hash.get,
-                        key=StreamlitPage.get_streamlit_default_key())
+                        key=get_streamlit_default_key())
 
 
 def input_dolphin_process(dolphin_instance: DSMetaInstance, project_code: str) -> Optional[str]:
@@ -289,4 +289,4 @@ def input_dolphin_process(dolphin_instance: DSMetaInstance, project_code: str) -
                         placeholder="请选择工作流",
                         index=None,
                         format_func=code_name_hash.get,
-                        key=StreamlitPage.get_streamlit_default_key())
+                        key=get_streamlit_default_key())
