@@ -8,7 +8,7 @@ from typing import Optional, List
 import streamlit as st
 
 import metasequoia_connector as ms_conn
-from metasequoia_connector.config import Configuration
+from metasequoia_connector.config import ConnectManager
 from metasequoia_connector.node import KafkaServer, KafkaTopic, DSMetaInstance, SshTunnel, MysqlInstance
 
 __all__ = ["load_configuration", "show_databases", "show_tables", "show_create_table",
@@ -19,7 +19,7 @@ __all__ = ["load_configuration", "show_databases", "show_tables", "show_create_t
 
 @st.cache_data(ttl=300)
 def load_configuration():
-    return Configuration.from_environment()  # 读取配置信息
+    return ConnectManager.from_environment()  # 读取配置信息
 
 
 # ---------- Mysql 工具函数 ----------
