@@ -7,8 +7,8 @@ from typing import Optional, List
 
 import streamlit as st
 
+import metasequoia_connector as ms_conn
 from metasequoia.utils import dolphin_util
-from metasequoia.utils import kafka_util
 from metasequoia.utils import mysql_util
 from metasequoia_connector.config import Configuration
 from metasequoia_connector.node import KafkaServer, KafkaTopic, DSMetaInstance, SshTunnel, MysqlInstance
@@ -65,17 +65,17 @@ def show_create_table(rds_instance: MysqlInstance, schema: str, table: str, ssh_
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={KafkaServer: hash})
 def kafka_list_topics(kafka_server: KafkaServer):
-    return kafka_util.list_topics(kafka_server)
+    return ms_conn.kafka.list_topics(kafka_server)
 
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={KafkaServer: hash})
 def kafka_list_consumer_groups(kafka_server: KafkaServer):
-    return kafka_util.list_consumer_groups(kafka_server)
+    return ms_conn.kafka.list_consumer_groups(kafka_server)
 
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={KafkaTopic: hash})
 def kafka_get_topic_configs(kafka_topic: KafkaTopic):
-    return kafka_util.get_topic_configs(kafka_topic)
+    return ms_conn.kafka.get_topic_configs(kafka_topic)
 
 
 # ---------- 海豚调度工具函数 ----------
