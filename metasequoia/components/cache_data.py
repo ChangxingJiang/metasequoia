@@ -8,7 +8,6 @@ from typing import Optional, List
 import streamlit as st
 
 import metasequoia_connector as ms_conn
-from metasequoia.utils import dolphin_util
 from metasequoia.utils import mysql_util
 from metasequoia_connector.config import Configuration
 from metasequoia_connector.node import KafkaServer, KafkaTopic, DSMetaInstance, SshTunnel, MysqlInstance
@@ -83,10 +82,10 @@ def kafka_get_topic_configs(kafka_topic: KafkaTopic):
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128,
                hash_funcs={DSMetaInstance: hash, SshTunnel: hash})
 def dolphin_meta_list_projects(instance: DSMetaInstance):
-    return dolphin_util.list_projects(instance)
+    return ms_conn.dolphin.list_projects(instance)
 
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128,
                hash_funcs={DSMetaInstance: hash, SshTunnel: hash})
 def dolphin_meta_list_processes(instance: DSMetaInstance, project_code: str):
-    return dolphin_util.list_processes(instance, project_code)
+    return ms_conn.dolphin.list_processes(instance, project_code)
