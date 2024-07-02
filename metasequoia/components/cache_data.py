@@ -75,17 +75,3 @@ def kafka_list_consumer_groups(kafka_server: ms_conn.KafkaServer):
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={ms_conn.KafkaTopic: hash})
 def kafka_get_topic_configs(kafka_topic: ms_conn.KafkaTopic):
     return ms_conn.kafka.get_topic_configs(kafka_topic)
-
-
-# ---------- 海豚调度工具函数 ----------
-
-@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128,
-               hash_funcs={ms_conn.DSMetaInstance: hash, ms_conn.SshTunnel: hash})
-def dolphin_meta_list_projects(instance: ms_conn.DSMetaInstance):
-    return ms_conn.dolphin.list_projects(instance)
-
-
-@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128,
-               hash_funcs={ms_conn.DSMetaInstance: hash, ms_conn.SshTunnel: hash})
-def dolphin_meta_list_processes(instance: ms_conn.DSMetaInstance, project_code: str):
-    return ms_conn.dolphin.list_processes(instance, project_code)
