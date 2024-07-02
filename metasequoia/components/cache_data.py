@@ -8,7 +8,6 @@ from typing import Optional, List
 import streamlit as st
 
 import metasequoia_connector as ms_conn
-from metasequoia.utils import mysql_util
 from metasequoia_connector.config import Configuration
 from metasequoia_connector.node import KafkaServer, KafkaTopic, DSMetaInstance, SshTunnel, MysqlInstance
 
@@ -46,18 +45,18 @@ def list_database_and_table(rds_instance: MysqlInstance, ignore_schema: List[str
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={MysqlInstance: hash, SshTunnel: hash})
 def show_databases(rds_instance: MysqlInstance):
-    return mysql_util.show_databases(rds_instance)
+    return ms_conn.mysql.show_databases(rds_instance)
 
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={MysqlInstance: hash, str: hash})
 def show_tables(rds_instance: MysqlInstance, schema: str):
-    return mysql_util.show_tables(rds_instance, schema)
+    return ms_conn.mysql.show_tables(rds_instance, schema)
 
 
 @st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128,
                hash_funcs={MysqlInstance: hash, SshTunnel: hash, str: hash})
 def show_create_table(rds_instance: MysqlInstance, schema: str, table: str, ssh_tunnel: Optional[SshTunnel] = None):
-    return mysql_util.show_create_table(rds_instance, schema, table, ssh_tunnel)
+    return ms_conn.mysql.show_create_table(rds_instance, schema, table, ssh_tunnel)
 
 
 # ---------- Kafka 工具函数 ----------
