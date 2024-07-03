@@ -8,12 +8,10 @@ import streamlit as st
 
 import metasequoia_connector as ms_conn
 from metasequoia.components import cache_data
-from metasequoia.components.cache_data import kafka_list_topics, kafka_list_consumer_groups
 from metasequoia_streamlit.common import get_streamlit_default_key
 
 __all__ = [
     "input_rds_name", "input_rds_schema", "input_rds_table_name", "input_rds_instance", "input_rds_table",
-    "input_kafka_servers_name", "input_kafka_server", "input_kafka_topic", "input_kafka_group",
     "input_ssh_tunnel",
 ]
 
@@ -94,76 +92,6 @@ def input_rds_table(use_ssh: bool = False,
     if rds_instance is not None and rds_schema is not None and rds_table_name is not None:
         rds_table = ms_conn.MysqlTable(instance=rds_instance, schema=rds_schema, table=rds_table_name)
         return rds_table
-    else:
-        return None
-
-
-# ---------- Kafka 相关输入组件 ----------
-
-
-def input_kafka_servers_name() -> str:
-    """【输入】内置 Kafka 集群名称"""
-    configuration = cache_data.load_configuration()
-    return st.selectbox(label="请选择内置Kafka集群",
-                        options=configuration.get_kafka_list(),
-                        placeholder="请选择集群",
-                        index=None,
-                        key=get_streamlit_default_key())
-
-
-def input_kafka_server(use_ssh: bool = False) -> Optional[ms_conn.KafkaServer]:
-    """【输入】RDS 实例"""
-    configuration = cache_data.load_configuration()
-    mode = st.radio(label="是否使用内置Kafka集群",
-                    options=["使用内置Kafka集群", "使用自定义Kafka集群"],
-                    index=0,
-                    key=get_streamlit_default_key())
-    if mode == "使用内置Kafka集群":
-        # 使用内置 RDS 实例
-        name = input_kafka_servers_name()
-        if name is not None:
-            return configuration.get_kafka_server(name)
-    else:
-        bootstrap_servers = st.text_input(label="kafka集群",
-                                          value=None,
-                                          placeholder="例如：server1:9092,server2:9092")
-        if use_ssh is True:
-            ssh_tunnel = input_ssh_tunnel()
-        else:
-            ssh_tunnel = None
-        if bootstrap_servers is not None:
-            return ms_conn.KafkaServer(bootstrap_servers=bootstrap_servers.split(","), ssh_tunnel=ssh_tunnel)
-    return None
-
-
-def input_kafka_topic(use_ssh: bool = False) -> Optional[ms_conn.KafkaTopic]:
-    """【输入】Kafka Topic"""
-    kafka_server = input_kafka_server(use_ssh=use_ssh)
-    topic_list = kafka_list_topics(kafka_server) if kafka_server is not None else []
-    topic = st.selectbox(label="TOPIC",
-                         options=topic_list,
-                         placeholder="请选择TOPIC",
-                         index=None,
-                         key=get_streamlit_default_key())
-
-    if kafka_server is not None and topic is not None:
-        return ms_conn.KafkaTopic(kafka_server=kafka_server, topic=topic)
-    else:
-        return None
-
-
-def input_kafka_group(use_ssh: bool = False) -> Optional[ms_conn.KafkaGroup]:
-    """【输入】Kafka Group"""
-    kafka_server = input_kafka_server(use_ssh=use_ssh)
-    group_list = kafka_list_consumer_groups(kafka_server) if kafka_server is not None else []
-    group = st.selectbox(label="消费者组",
-                         options=group_list,
-                         placeholder="请选择消费者组",
-                         index=None,
-                         key=get_streamlit_default_key())
-
-    if kafka_server is not None and group is not None:
-        return ms_conn.KafkaGroup(kafka_server=kafka_server, group=group)
     else:
         return None
 

@@ -10,7 +10,7 @@ import streamlit as st
 import metasequoia_connector as ms_conn
 
 __all__ = ["load_configuration", "show_databases", "show_tables", "show_create_table",
-           "kafka_list_topics", "kafka_list_consumer_groups", "kafka_get_topic_configs"]
+           ]
 
 
 # ---------- 配置文件函数 ----------
@@ -58,20 +58,3 @@ def show_tables(rds_instance: ms_conn.MysqlInstance, schema: str):
 def show_create_table(rds_instance: ms_conn.MysqlInstance, schema: str, table: str,
                       ssh_tunnel: Optional[ms_conn.SshTunnel] = None):
     return ms_conn.mysql.show_create_table(rds_instance, schema, table, ssh_tunnel)
-
-
-# ---------- Kafka 工具函数 ----------
-
-@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={ms_conn.KafkaServer: hash})
-def kafka_list_topics(kafka_server: ms_conn.KafkaServer):
-    return ms_conn.kafka.list_topics(kafka_server)
-
-
-@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={ms_conn.KafkaServer: hash})
-def kafka_list_consumer_groups(kafka_server: ms_conn.KafkaServer):
-    return ms_conn.kafka.list_consumer_groups(kafka_server)
-
-
-@st.cache_data(ttl=datetime.timedelta(minutes=30), max_entries=128, hash_funcs={ms_conn.KafkaTopic: hash})
-def kafka_get_topic_configs(kafka_topic: ms_conn.KafkaTopic):
-    return ms_conn.kafka.get_topic_configs(kafka_topic)
